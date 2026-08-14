@@ -16,7 +16,7 @@
       cardDesc: "提示詞不是起點，先想清楚自己真正需要什麼。" },
     { id: "03", file: "module03.html", type: "內容展示＋練習題", title: "AI 輔助研究流程",
       cardDesc: "研究歷程六階段，AI 可以介入哪裡、人必須把關哪裡。" },
-    { id: "04", file: "module04-student.html", type: "完整互動＋繳交＋批改", title: "實作學習單與批改網站",
+    { id: "04", file: "module04-student.html", type: "完整互動＋繳交＋批改", title: "證據、資料庫與文獻品質",
       cardDesc: "AI 產出 → 資料庫查證 → 比較與修正 → 反思，送出後由老師批改。" },
     { id: "05", file: "module05.html", type: "網頁化填答表單", title: "AI 輔助閱讀",
       cardDesc: "先讀—再問—回原文核對，20 題四階段學習單。" },
