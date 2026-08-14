@@ -90,6 +90,41 @@ const Field = ({label,hint,required,children}) => (
   </div>
 );
 
+/* 站台導覽：與其他模組頁的頁首/頁尾樣式一致，僅供跳轉，不影響上方送出邏輯 */
+const SiteTopBar = () => (
+  <div style={{
+    borderBottom:"1px solid var(--line)",background:"var(--paper)",
+    display:"flex",alignItems:"center",justifyContent:"space-between",
+    padding:"16px 20px"
+  }}>
+    <a href="index.html" style={{textDecoration:"none",display:"flex",flexDirection:"column",lineHeight:1.3}}>
+      <span style={{fontSize:11,letterSpacing:1.5,color:"var(--gold)",fontWeight:600}}>AI 素養工作坊</span>
+      <span style={{fontFamily:'"Noto Serif TC","Georgia",serif',fontWeight:600,fontSize:17,color:"var(--ink)"}}>課程學習單</span>
+    </a>
+    <a href="index.html" style={{
+      fontSize:14,color:"var(--ink-light)",textDecoration:"none",fontWeight:600,
+      padding:"8px 14px",border:"1px solid var(--line)",borderRadius:999
+    }}>回課程首頁</a>
+  </div>
+);
+
+const SiteFooterPager = () => (
+  <nav style={{
+    display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,
+    marginTop:56,paddingTop:24,borderTop:"1px solid var(--line)"
+  }}>
+    <a href="module03.html" style={{flex:1,textDecoration:"none",color:"var(--ink)",fontSize:14,border:"1px solid var(--line)",borderRadius:"var(--radius)",padding:"12px 16px"}}>
+      <span style={{display:"block",fontSize:11,color:"var(--text-soft)",marginBottom:4}}>← 上一個</span>
+      Module 03｜AI 輔助研究流程
+    </a>
+    <a href="index.html" style={{flex:"0 0 auto",textDecoration:"none",color:"var(--text-soft)",fontSize:13,padding:"12px 14px"}}>回首頁</a>
+    <a href="module05.html" style={{flex:1,textAlign:"right",textDecoration:"none",color:"var(--ink)",fontSize:14,border:"1px solid var(--line)",borderRadius:"var(--radius)",padding:"12px 16px"}}>
+      <span style={{display:"block",fontSize:11,color:"var(--text-soft)",marginBottom:4}}>下一個 →</span>
+      Module 05｜AI 輔助閱讀
+    </a>
+  </nav>
+);
+
 function App(){
   const pack = COURSE_PACKS[activePack];
   const [formData, setFormData] = useState({
@@ -171,6 +206,8 @@ function App(){
   };
 
   return (
+    <React.Fragment>
+    <SiteTopBar />
     <div style={{maxWidth:760,margin:"0 auto",padding:"48px 20px 80px"}}>
 
       <header style={{marginBottom:40}}>
@@ -349,7 +386,10 @@ function App(){
         </div>
 
       </form>
+
+      <SiteFooterPager />
     </div>
+    </React.Fragment>
   );
 }
 
