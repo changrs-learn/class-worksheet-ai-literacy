@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 07｜負責任研究｜AI 素養工作坊</title>
+<link rel="stylesheet" href="assets/style.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="assets/shared.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, PracticeNote, PracticeField, ModulePager } = window.SiteShared;
+
+const GOALS = [
+  "理解使用 AI 不等於免除研究責任",
+  "辨認研究中的誠實、審慎與可追溯三個核心原則",
+  "能依序查找課程、系所、學校、期刊與出版社的 AI 政策，判斷揭露位置",
+  "能以 ROBOT test 檢視 AI 生成內容"
+];
+
+const QUESTIONS = [
+  "如果 AI 幫你完成了一部分研究工作，最後誰要負責？",
+  "你認為「誠實使用 AI」最重要的是什麼？",
+  "ROBOT test 五個面向中，哪一項最容易被漂亮、流暢的文字掩蓋？"
+];
+
+const PRINCIPLES = [
+  { title: "誠實", desc: "如實面對 AI 在研究中的角色，不隱藏、不誇大。" },
+  { title: "審慎", desc: "不因為方便而省略查核、比較與判斷。" },
+  { title: "可追溯", desc: "研究內容能被回查到來源、脈絡與決策過程。" },
+  { title: "主體性", desc: "AI 提供協助，但研究者仍是最終判斷與負責的主體。" }
+];
+
+const ROBOT_LETTERS = [
+  { letter: "R", name: "Reliability｜可靠性", question: "這個說法能否被獨立驗證？有哪些可查核的具體主張？" },
+  { letter: "O", name: "Origin｜來源", question: "這段內容可能混合了哪些來源？來源是否可辨識、適切且足夠新？" },
+  { letter: "B", name: "Bias｜偏誤", question: "哪些文化、語言、學科、族群或商業觀點被放大？誰的觀點缺席？" },
+  { letter: "O", name: "Objectivity｜客觀性", question: "AI 是否把爭議說成共識，把意見寫成事實？是否呈現替代解釋？" },
+  { letter: "T", name: "Timeliness｜時效性", question: "內容是否可能受到知識截止日、政策變動或最新研究影響？" }
+];
+
+const DECISION_CARD = [
+  "我使用了哪一個 AI 工具、哪個版本、在何時使用？",
+  "AI 參與的是發想、搜尋、整理、翻譯、寫作、資料分析、圖像或其他工作？",
+  "哪些 AI 產出真正進入了研究成果？哪些被查核後捨棄？",
+  "我查了哪些課程、系所、學校、期刊或出版社規範？它們要求在哪裡揭露？",
+  "我如何回到原始來源、資料或圖像權利人進行確認？",
+  "我會把揭露、引用、對話紀錄與授權證據放在哪裡保存？"
+];
+
+function App() {
+  const [robot, setRobot] = useState(["", "", "", "", ""]);
+  const [robotImpact, setRobotImpact] = useState("");
+  const [card, setCard] = useState(["", "", "", "", "", ""]);
+
+  const setRobotAt = (i) => (e) => {
+    const next = robot.slice();
+    next[i] = e.target.value;
+    setRobot(next);
+  };
+  const setCardAt = (i) => (e) => {
+    const next = card.slice();
+    next[i] = e.target.value;
+    setCard(next);
+  };
+
+  return (
+    <React.Fragment>
+      <SiteHeader />
+      <main className="page-shell page-shell--wide">
+        <ModuleHero
+          id="07"
+          type="內容展示＋互動測驗"
+          title="負責任研究"
+          intro="使用 AI 不會自動免除研究責任。本模組收束到「誠實、審慎、可追溯、主體性」四個原則，並提供 ROBOT test（可靠性/來源/偏誤/客觀性/時效性）評估 AI 生成內容的方法，以及一份可實作的 AI 揭露決策卡。"
+          goals={GOALS}
+        />
+
+        <Block title="四個核心原則">
+          <div className="principle-grid">
+            {PRINCIPLES.map((p, i) => (
+              <div className="principle-item" key={i}>
+                <p className="principle-item__title">{p.title}</p>
+                <p className="principle-item__desc">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Block>
+
+        <Block title="核心收穫">
+          <div className="callout">
+            負責任的研究，不是把 AI 排除在外，而是在使用 AI 之後，仍然願意對研究內容、資料來源、解讀方式與最終結果承擔責任。
+          </div>
+        </Block>
+
+        <Block title="練習一｜ROBOT test 小測驗">
+          <PracticeNote text="練習用，僅供自我檢視，不會送出或儲存" />
+          <p className="hint" style={{marginBottom:14}}>請先讀下面這段「AI 生成的文獻摘要示例」，再依 R-O-B-O-T 五個面向逐一檢視，寫下你的判斷。</p>
+
+          <div className="callout callout--muted" style={{marginBottom:20}}>
+            <p style={{fontWeight:600,marginBottom:8,color:"var(--text)"}}>練習用示例（虛構文字，非真實文獻摘要）</p>
+            <p>「根據多篇研究，AI 影像辨識技術能夠準確判斷超過 95% 的作物病害種類，已經證實可以取代傳統田間巡查，全球農業已經全面採用這項技術。這項技術主要由歐美研究團隊開發，目前是農業科技的共識做法，能大幅降低農藥使用量。相關研究成果最早可追溯至 2018 年的一篇論文，至今仍是該領域最重要的參考依據。」</p>
+          </div>
+
+          {ROBOT_LETTERS.map((r, i) => (
+            <PracticeField
+              key={i}
+              label={<span><span className="q-badge">{r.letter}</span>{r.name} — {r.question}</span>}
+              rows={2}
+              value={robot[i]}
+              onChange={setRobotAt(i)}
+            />
+          ))}
+
+          <PracticeField
+            label="貫穿提醒：如果這段內容錯了，誰會受到影響？錯誤的後果有多大？是否需要請教領域專家？"
+            rows={2}
+            value={robotImpact}
+            onChange={(e) => setRobotImpact(e.target.value)}
+          />
+        </Block>
+
+        <Block title="練習二｜AI 揭露決策卡（六格）">
+          <PracticeNote text="請選一個你正在進行的研究報告、專題或學位論文來練習填寫" />
+          <div className="module-grid" style={{padding:0,margin:0,marginTop:14}}>
+            {DECISION_CARD.map((q, i) => (
+              <div className="stage-card" style={{textAlign:"left"}} key={i}>
+                <span className="stage-card__badge">{i + 1}</span>
+                <p style={{fontSize:14,fontWeight:600,marginBottom:10,lineHeight:1.6}}>{q}</p>
+                <textarea rows={3} value={card[i]} onChange={setCardAt(i)} placeholder="請輸入你的答案..." />
+              </div>
+            ))}
+          </div>
+        </Block>
+
+        <Block title="討論／反思題">
+          <ReflectionQuestions questions={QUESTIONS} />
+        </Block>
+
+        <ModulePager currentId="07" />
+      </main>
+      <SiteFooter />
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
