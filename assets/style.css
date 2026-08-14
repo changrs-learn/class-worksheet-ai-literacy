@@ -1,0 +1,188 @@
+/* ====================================================================
+   AI 素養課程學習單網站 — 共用樣式
+   全站（首頁 + Module 00–03, 05–07）共用；Module 04 的兩個既有檔案
+   （module04-student.html / module04-teacher.html）維持原樣，不引用此檔。
+   ==================================================================== */
+
+:root{
+  --ink:#1E3A5F;
+  --ink-light:#3E5A80;
+  --paper:#FFFFFF;
+  --paper-soft:#F7F8FA;
+  --line:#E2E5EA;
+  --text:#1A1F27;
+  --text-soft:#5B6472;
+  --gold:#B8862E;
+  --gold-soft:#FBF3E4;
+  --danger:#B3261E;
+  --danger-soft:#FBEAEA;
+  --radius:10px;
+}
+
+*{box-sizing:border-box;}
+
+html{scroll-behavior:smooth;}
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--text);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  line-height:1.7;
+}
+
+h1,h2,h3{font-family:"Noto Serif TC","Georgia",serif;font-weight:600;margin:0;}
+
+a{color:var(--ink);}
+
+.hint{font-size:13px;color:var(--text-soft);font-weight:400;}
+
+input,textarea{
+  width:100%;font-family:inherit;font-size:15px;color:var(--text);
+  background:var(--paper-soft);border:1px solid var(--line);border-radius:8px;
+  padding:10px 12px;transition:border-color .15s;
+}
+input:focus,textarea:focus{outline:none;border-color:var(--ink);background:var(--paper);}
+
+/* ---------- 頁首 ---------- */
+.site-header{
+  border-bottom:1px solid var(--line);
+  background:var(--paper);
+  position:sticky;top:0;z-index:10;
+}
+.site-header__inner{
+  max-width:960px;margin:0 auto;padding:16px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.site-header__brand{
+  display:flex;flex-direction:column;text-decoration:none;color:var(--text);
+}
+.site-header__brand-eyebrow{
+  font-size:11px;letter-spacing:1.5px;color:var(--gold);font-weight:600;
+}
+.site-header__brand-title{
+  font-family:"Noto Serif TC","Georgia",serif;font-weight:600;font-size:17px;color:var(--ink);
+}
+.site-header__home-link{
+  font-size:14px;color:var(--ink-light);text-decoration:none;font-weight:600;
+  padding:8px 14px;border:1px solid var(--line);border-radius:999px;
+  white-space:nowrap;
+}
+.site-header__home-link:hover{border-color:var(--ink);}
+
+/* ---------- 頁尾 ---------- */
+.site-footer{
+  border-top:1px solid var(--line);
+  margin-top:64px;
+  padding:32px 20px 48px;
+  background:var(--paper-soft);
+}
+.site-footer__inner{
+  max-width:960px;margin:0 auto;
+  font-size:13px;color:var(--text-soft);
+  display:flex;flex-direction:column;gap:6px;
+}
+
+/* ---------- 模組頁殼層 ---------- */
+.page-shell{max-width:760px;margin:0 auto;padding:48px 20px 80px;}
+.page-shell--wide{max-width:960px;}
+
+.module-eyebrow{
+  font-size:13px;letter-spacing:1px;color:var(--gold);font-weight:600;margin-bottom:8px;
+}
+.module-title{font-size:28px;margin-bottom:16px;}
+.module-goals{
+  background:var(--paper-soft);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;margin-top:16px;
+}
+.module-goals__title{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--ink);}
+.module-goals ul{margin:0;padding-left:20px;font-size:14px;color:var(--text-soft);}
+.module-goals li{margin-bottom:6px;}
+
+.callout{
+  background:var(--gold-soft);border:1px solid #EBD7AE;border-radius:var(--radius);
+  padding:16px 18px;font-size:14px;color:var(--text);
+}
+.callout--muted{background:var(--paper-soft);border-color:var(--line);color:var(--text-soft);}
+
+section.block{margin-bottom:36px;}
+section.block > h2{
+  font-size:19px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--line);
+}
+
+.reflection-list{margin:0;padding-left:0;list-style:none;}
+.reflection-list li{
+  padding:14px 16px;background:var(--paper-soft);border:1px solid var(--line);
+  border-radius:var(--radius);margin-bottom:10px;font-size:15px;
+}
+
+.practice-note{
+  display:inline-block;font-size:12px;color:var(--text-soft);
+  background:var(--paper-soft);border:1px solid var(--line);border-radius:999px;
+  padding:3px 10px;margin-bottom:10px;
+}
+
+/* ---------- 模組頁尾導覽（上一個/下一個/回首頁） ---------- */
+.module-pager{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:56px;padding-top:24px;border-top:1px solid var(--line);
+}
+.module-pager__link{
+  flex:1;text-decoration:none;color:var(--ink);font-size:14px;
+  border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;
+  transition:border-color .15s;
+}
+.module-pager__link:hover{border-color:var(--ink);}
+.module-pager__link--next{text-align:right;}
+.module-pager__label{display:block;font-size:11px;color:var(--text-soft);margin-bottom:4px;}
+.module-pager__home{
+  flex:0 0 auto;text-decoration:none;color:var(--text-soft);font-size:13px;
+  padding:12px 14px;
+}
+
+/* ---------- 首頁 ---------- */
+.hero{
+  text-align:center;padding:64px 20px 40px;max-width:720px;margin:0 auto;
+}
+.hero__eyebrow{font-size:13px;letter-spacing:2px;color:var(--gold);font-weight:600;margin-bottom:14px;}
+.hero__title{font-size:34px;margin-bottom:18px;}
+.hero__desc{font-size:16px;color:var(--text-soft);}
+
+.course-meta{
+  max-width:760px;margin:0 auto 56px;padding:0 20px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;
+}
+.course-meta__item{
+  background:var(--paper-soft);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;text-align:center;
+}
+.course-meta__label{font-size:12px;color:var(--text-soft);margin-bottom:6px;}
+.course-meta__value{font-size:15px;font-weight:600;color:var(--ink);}
+
+.module-grid{
+  max-width:960px;margin:0 auto;padding:0 20px 40px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;
+}
+.module-card{
+  display:block;text-decoration:none;color:var(--text);
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;transition:border-color .15s,transform .15s;
+}
+.module-card:hover{border-color:var(--ink);transform:translateY(-2px);}
+.module-card__id{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;
+  font-size:13px;font-weight:700;margin-bottom:14px;
+}
+.module-card__type{
+  display:inline-block;margin-left:8px;font-size:11px;color:var(--gold);
+  background:var(--gold-soft);border-radius:999px;padding:3px 10px;vertical-align:middle;
+}
+.module-card__title{font-size:17px;margin-bottom:8px;}
+.module-card__desc{font-size:13px;color:var(--text-soft);line-height:1.6;}
+
+@media (max-width:600px){
+  .hero__title{font-size:26px;}
+  .module-pager{flex-direction:column;align-items:stretch;}
+  .module-pager__home{order:-1;text-align:center;}
+}

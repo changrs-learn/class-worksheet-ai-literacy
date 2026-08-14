@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 素養工作坊｜課程學習單</title>
+<link rel="stylesheet" href="assets/style.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="assets/shared.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { SiteHeader, SiteFooter, MODULES } = window.SiteShared;
+
+function ModuleCard({ m }) {
+  return (
+    <a className="module-card" href={m.file}>
+      <span className="module-card__id">{m.id}</span>
+      <span className="module-card__type">{m.type}</span>
+      <h3 className="module-card__title">{m.title}</h3>
+      <p className="module-card__desc">{m.cardDesc}</p>
+    </a>
+  );
+}
+
+function App() {
+  return (
+    <React.Fragment>
+      <SiteHeader />
+
+      <section className="hero">
+        <p className="hero__eyebrow">AI 素養工作坊</p>
+        <h1 className="hero__title">課程學習單</h1>
+        <p className="hero__desc">
+          生成式 AI 可以協助蒐集資料、運用於學術研究及論文寫作，但其提供的資料可能暗藏玄機。
+          本課程將解說如何進行事實查核、辨識參考文獻的真偽，並探討引用原則與相關學術倫理議題，
+          讓您安心使用 AI 輔助研究。
+        </p>
+      </section>
+
+      <div className="course-meta">
+        <div className="course-meta__item">
+          <p className="course-meta__label">課程時數</p>
+          <p className="course-meta__value">1–2 小時工作坊</p>
+        </div>
+        <div className="course-meta__item">
+          <p className="course-meta__label">適合對象</p>
+          <p className="course-meta__value">大四生、研究生</p>
+        </div>
+        <div className="course-meta__item">
+          <p className="course-meta__label">講師</p>
+          <p className="course-meta__value">張瑞珊</p>
+        </div>
+        <div className="course-meta__item">
+          <p className="course-meta__label">進行方式</p>
+          <p className="course-meta__value">當場實作＋事後批閱</p>
+        </div>
+      </div>
+
+      <section className="module-grid">
+        {MODULES.map((m) => <ModuleCard key={m.id} m={m} />)}
+      </section>
+
+      <p style={{textAlign:"center", fontSize:13, color:"var(--text-soft)", padding:"0 20px 40px"}}>
+        8 個模組不需依序完成，可自由跳轉；Module 04 完成後會送交老師批改，其餘模組僅供課堂練習與自我檢視。
+      </p>
+
+      <SiteFooter />
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
