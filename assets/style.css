@@ -236,3 +236,17 @@ table.matrix-table li{margin-bottom:3px;}
 }
 .principle-item__title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;}
 .principle-item__desc{font-size:12px;color:var(--text-soft);line-height:1.6;}
+
+/* ---------- 核對清單表格（例如 Module 05 田間部署查核） ---------- */
+.check-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;}
+.check-table th,.check-table td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:middle;}
+.check-table th{background:var(--paper-soft);font-size:12px;color:var(--ink);}
+.check-table td.check-table__radio{text-align:center;white-space:nowrap;width:1%;}
+.check-table input[type="text"]{padding:6px 8px;font-size:13px;}
+
+/* ---------- 題號徽章（例如 Module 05 20 題學習單） ---------- */
+.q-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;
+  font-size:12px;font-weight:700;margin-right:8px;flex-shrink:0;vertical-align:middle;
+}

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 05｜AI 輔助閱讀｜AI 素養工作坊</title>
+<link rel="stylesheet" href="assets/style.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="assets/shared.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, PracticeNote, ModulePager } = window.SiteShared;
+
+const GOALS = [
+  "說明 AI 在閱讀中的適當角色與限制",
+  "辨認哪些閱讀任務適合使用 AI，哪些地方必須回到原文查核",
+  "分辨研究文章的研究範圍、檢索結果、作者解釋與尚未被證明的推論",
+  "區分模型在特定測試資料上的準確率，與真實世界中的可泛化性、可部署性與使用風險"
+];
+
+const DISCUSSION_QUESTIONS = [
+  "一篇文章說亞洲研究資料較多，是否代表全球研究真的集中在亞洲？",
+  "模型在測試資料上達到高準確率，是否就代表可以直接用於真實情境？你還需要查哪些資訊？"
+];
+
+const FIELD_CHECK_ITEMS = [
+  "不同地區或品種的外部驗證",
+  "真實田間環境測試",
+  "設備與運算需求",
+  "成本與可負擔性",
+  "漏判或誤判風險",
+  "是否直接連結施藥決策"
+];
+
+/* ---- 本頁小型共用元件（僅本模組使用，不放進 assets/shared.js） ---- */
+const QNum = ({n}) => <span className="q-badge">{n}</span>;
+
+const TA = ({n,label,hint,value,onChange,rows,placeholder}) => (
+  <div style={{marginBottom:18}}>
+    <label className="field-label" style={{display:"block",fontWeight:600,fontSize:14,marginBottom:6}}>
+      {n && <QNum n={n} />}{label}
+      {hint && <span className="hint"> — {hint}</span>}
+    </label>
+    <textarea rows={rows || 3} value={value} onChange={onChange} placeholder={placeholder || "請輸入你的答案..."} />
+  </div>
+);
+
+const TI = ({n,label,value,onChange,placeholder}) => (
+  <div style={{marginBottom:18}}>
+    <label className="field-label" style={{display:"block",fontWeight:600,fontSize:14,marginBottom:6}}>
+      {n && <QNum n={n} />}{label}
+    </label>
+    <input value={value} onChange={onChange} placeholder={placeholder || ""} />
+  </div>
+);
+
+const YesNo = ({n,label,value,onChange,detailValue,onDetailChange,detailPlaceholder}) => (
+  <div style={{marginBottom:18}}>
+    <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>{n && <QNum n={n} />}{label}</p>
+    <div style={{display:"flex",gap:20,marginBottom: value === "yes" ? 8 : 0}}>
+      <label style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+        <input type="radio" checked={value === "no"} onChange={() => onChange("no")} style={{width:"auto"}} /> 沒有
+      </label>
+      <label style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+        <input type="radio" checked={value === "yes"} onChange={() => onChange("yes")} style={{width:"auto"}} /> 有
+      </label>
+    </div>
+    {value === "yes" && (
+      <input value={detailValue} onChange={onDetailChange} placeholder={detailPlaceholder || "請說明..."} />
+    )}
+  </div>
+);
+
+const RadioGroup = ({n,label,value,onChange,options}) => (
+  <div style={{marginBottom:18}}>
+    {label && <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>{n && <QNum n={n} />}{label}</p>}
+    <div style={{display:"flex",flexWrap:"wrap",gap:16}}>
+      {options.map((opt,i) => (
+        <label key={i} style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+          <input type="radio" checked={value === opt} onChange={() => onChange(opt)} style={{width:"auto"}} /> {opt}
+        </label>
+      ))}
+    </div>
+  </div>
+);
+
+function App() {
+  const [f, setF] = useState({
+    q1:"", q2a:"", q2b:"", q2c:"", q3:"", q4choice:"", q4reason:"",
+    q5:"", q6:"", q7summary:"", q7newinfo:"", q7newinfoDetail:"",
+    q8:"", q9over:"", q9detail:"", q10:"", q11:"",
+    q12judge:"", q12loc:"", q13judge:"", q13loc:"", q14:"",
+    q15data:"", q15test:"", q15loc:"",
+    q16: FIELD_CHECK_ITEMS.map(() => ({status:"", note:""})),
+    q17diff:"", q17action:"",
+    q18support:"", q18notyet:"", q19:"", q20:""
+  });
+  const set = (key) => (e) => setF({...f, [key]: e.target.value});
+  const setChoice = (key) => (val) => setF({...f, [key]: val});
+  const setQ16 = (i, field) => (e) => {
+    const next = f.q16.slice();
+    next[i] = {...next[i], [field]: e.target ? e.target.value : e};
+    setF({...f, q16: next});
+  };
+  const setQ16Status = (i, val) => {
+    const next = f.q16.slice();
+    next[i] = {...next[i], status: val};
+    setF({...f, q16: next});
+  };
+
+  return (
+    <React.Fragment>
+      <SiteHeader />
+      <main className="page-shell page-shell--wide">
+        <ModuleHero
+          id="05"
+          type="網頁化填答表單"
+          title="AI 輔助閱讀：先讀—再問—回原文核對"
+          intro="AI 可以幫忙摘要、標重點、轉述複雜段落，但這只是輔助理解的起點，不能取代研究者自己對文本的判讀。這份學習單搭配課堂案例文本，依「先讀→再問→比對→回原文核對」四階段進行，共 20 題；請依照課堂順序完成，不要一開始就把原文或整篇文章交給 AI。此頁僅供課堂當場填寫與自我檢視，不會送出或儲存，離開頁面內容就會清空。"
+          goals={GOALS}
+        />
+
+        <Block title="課堂案例文本｜AI 能否直接看懂田間病害？">
+          <div className="callout">
+            <p style={{marginBottom:12}}>人工智慧逐漸被應用於精準農業。研究者利用 RGB、無人機、多光譜與高光譜影像，嘗試辨識作物葉片上的病斑與早期異常。這些系統希望協助農民更早發現問題，將巡查、施藥與其他管理工作集中在較需要的區域。</p>
+            <p style={{marginBottom:12}}>一篇系統性回顧整理了 2016 至 2024 年間，使用機器學習與深度學習進行作物病害辨識的研究。文章比較了傳統機器學習、卷積神經網路與 Vision Transformer 等方法，也整理不同研究使用的影像類型、資料集與評估指標。部分研究報告很高的分類準確率，卷積神經網路則被描述為較容易配合一般運算設備使用。</p>
+            <p style={{marginBottom:12}}>不過，不同研究使用的作物、影像條件、資料來源與測試方法並不完全相同。文章也提到，許多研究使用公開資料集或受控制的影像，研究資料的地理分布並不平均。當模型從研究資料走向真實農田時，品種、光線、背景、氣候、病害程度、設備與使用成本都可能影響結果。</p>
+            <p>閱讀這篇文章時，請注意作者如何描述研究範圍、資料來源與模型表現。也請思考：文章中的數字可以支持哪些主張？哪些主張還需要其他資料或現場測試才能判斷？</p>
+          </div>
+          <p className="hint" style={{marginTop:10}}>來源：改寫自 Majdalawieh et al. (2025)，供 Module 05 課堂閱讀練習使用。本文為學生版教學改寫文本，不是原文逐字摘錄。</p>
+        </Block>
+
+        <Block title="第一階段｜先讀">
+          <PracticeNote text="用 AI 之前，先寫下自己的理解，不要先問 AI" />
+          <TA n="1" label="我讀到的主題" hint="用一句話說明這篇文本主要在討論什麼" rows={2}
+            value={f.q1} onChange={set("q1")} />
+
+          <label className="field-label" style={{display:"block",fontWeight:600,fontSize:14,marginBottom:6}}>
+            <QNum n="2" />我的初步理解 <span className="hint">— 請寫下你認為文本最重要的三個訊息</span>
+          </label>
+          <TI label="1．" value={f.q2a} onChange={set("q2a")} />
+          <TI label="2．" value={f.q2b} onChange={set("q2b")} />
+          <TI label="3．" value={f.q2c} onChange={set("q2c")} />
+
+          <TA n="3" label="我的疑問" hint="閱讀後，我最想查證或進一步了解的是" rows={2}
+            value={f.q3} onChange={set("q3")} />
+
+          <div style={{marginBottom:18}}>
+            <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>
+              <QNum n="4" />我的預測 — 如果研究中的 AI 模型準確率很高，我目前
+            </p>
+            <div style={{display:"flex",gap:20,marginBottom:8}}>
+              <label style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+                <input type="radio" checked={f.q4choice === "會"} onChange={() => setChoice("q4choice")("會")} style={{width:"auto"}} /> 會
+              </label>
+              <label style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+                <input type="radio" checked={f.q4choice === "不會"} onChange={() => setChoice("q4choice")("不會")} style={{width:"auto"}} /> 不會
+              </label>
+            </div>
+            <textarea rows={2} value={f.q4reason} onChange={set("q4reason")} placeholder="認為它可以／不可以直接在田間使用，因為..." />
+          </div>
+        </Block>
+
+        <Block title="第二階段｜再問">
+          <PracticeNote text="現在才把「學生版案例文本」交給 AI，保留自己的問題" />
+          <div className="callout callout--muted" style={{marginBottom:18}}>
+            提問提示語範例（可參考使用）：「以下是學生版案例文本。請只根據這段文本回答，不要補充原文未提供的資料。我的問題是：＿＿＿＿。請指出文本中支持回答的句子，再說明哪些地方仍無法由這段文本確定。不要直接替我下結論。」
+          </div>
+
+          <TA n="5" label="我提出的問題" rows={2} value={f.q5} onChange={set("q5")} />
+          <TA n="6" label="我給 AI 的提示" hint="請記錄或貼上自己的提問，提問中是否要求 AI 只根據學生版文本回答？" rows={3}
+            value={f.q6} onChange={set("q6")} />
+          <TA n="7" label="AI 回答後，我先不急著接受" hint="請用自己的話寫出 AI 回答的主要意思，不要直接複製整段回答" rows={3}
+            value={f.q7summary} onChange={set("q7summary")} />
+          <YesNo n="7-1" label="AI 是否提出了文本中沒有出現的新資訊？"
+            value={f.q7newinfo} onChange={setChoice("q7newinfo")}
+            detailValue={f.q7newinfoDetail} onDetailChange={set("q7newinfoDetail")}
+            detailPlaceholder="請指出是哪個新資訊..." />
+        </Block>
+
+        <Block title="第三階段｜比對">
+          <PracticeNote text="把 AI 回答與學生版案例文本並排比較" />
+          <TA n="8" label="AI 回答與文本一致的地方" rows={3} value={f.q8} onChange={set("q8")} />
+          <YesNo n="9" label={<span>AI 可能過度推論的地方 — AI 是否使用了「證明」「一定」「可以直接」「適用於所有農田」等比文本更強的說法？</span>}
+            value={f.q9over} onChange={setChoice("q9over")}
+            detailValue={f.q9detail} onDetailChange={set("q9detail")}
+            detailPlaceholder="原句或意思是..." />
+          <TA n="10" label="AI 遺漏的地方" hint="文本中有沒有重要的限制、條件或疑問沒有出現在 AI 回答中？" rows={3}
+            value={f.q10} onChange={set("q10")} />
+          <TA n="11" label="我對原本理解的修正" hint="使用 AI 後，我同意、修正或保留原本哪一個想法？為什麼？" rows={3}
+            value={f.q11} onChange={set("q11")} />
+        </Block>
+
+        <Block title="第四階段｜回原文核對">
+          <PracticeNote text="現在才開啟原文 PDF，請記錄頁碼或段落位置，不要只寫「文章有提到」" />
+          <div className="callout callout--muted" style={{marginBottom:18}}>
+            提問提示語範例（可參考使用）：「我已先讀過學生版文本並提出自己的判斷。現在請協助我定位原文中與＿＿＿＿有關的段落或表格，標出頁碼或段落，並提醒我哪些地方仍需要自己核對；不要把定位結果當成已證明的結論。」
+          </div>
+
+          <p style={{fontWeight:600,fontSize:14,marginBottom:6}}><QNum n="12" />核對研究範圍 <span className="hint">— 原文是否回顧所有精準農業研究？請找出支持你判斷的段落或頁碼</span></p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:18}}>
+            <TI label="我的判斷" value={f.q12judge} onChange={set("q12judge")} />
+            <TI label="頁碼／段落" value={f.q12loc} onChange={set("q12loc")} />
+          </div>
+
+          <p style={{fontWeight:600,fontSize:14,marginBottom:6}}><QNum n="13" />核對研究資料分布 <span className="hint">— 原文如何描述研究資料的地理分布？它說的是研究作者、研究機構、研究場域，還是資料集來源？</span></p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:18}}>
+            <TI label="我的判斷" value={f.q13judge} onChange={set("q13judge")} />
+            <TI label="頁碼／段落" value={f.q13loc} onChange={set("q13loc")} />
+          </div>
+
+          <TA n="14" label="核對美洲研究的疑問" hint="原文是否充分解釋美國或其他美洲研究為什麼較少出現？如果沒有，還有哪些可能原因需要查證？" rows={3}
+            value={f.q14} onChange={set("q14")} />
+
+          <p style={{fontWeight:600,fontSize:14,marginBottom:6}}><QNum n="15" />核對高準確率 <span className="hint">— 原文中的高準確率是在什麼資料與測試條件下得到的？</span></p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:18}}>
+            <TI label="資料／影像條件" value={f.q15data} onChange={set("q15data")} />
+            <TI label="測試條件" value={f.q15test} onChange={set("q15test")} />
+            <TI label="頁碼／段落" value={f.q15loc} onChange={set("q15loc")} />
+          </div>
+
+          <div style={{marginBottom:18}}>
+            <p style={{fontWeight:600,fontSize:14,marginBottom:8}}><QNum n="16" />核對田間部署 <span className="hint">— 原文是否提供以下資訊？請勾選並記錄證據位置</span></p>
+            <div className="matrix-scroll">
+              <table className="check-table">
+                <thead>
+                  <tr>
+                    <th>查核項目</th>
+                    <th>文中有明確資料</th>
+                    <th>需要再查</th>
+                    <th>頁碼／段落或備註</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {FIELD_CHECK_ITEMS.map((item, i) => (
+                    <tr key={i}>
+                      <td>{item}</td>
+                      <td className="check-table__radio">
+                        <input type="radio" name={"q16-" + i} checked={f.q16[i].status === "has"}
+                          onChange={() => setQ16Status(i, "has")} style={{width:"auto"}} />
+                      </td>
+                      <td className="check-table__radio">
+                        <input type="radio" name={"q16-" + i} checked={f.q16[i].status === "need"}
+                          onChange={() => setQ16Status(i, "need")} style={{width:"auto"}} />
+                      </td>
+                      <td>
+                        <input type="text" value={f.q16[i].note} onChange={setQ16(i, "note")} placeholder="頁碼／段落或備註" />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <TA n="17" label="我發現的數字或敘述差異" hint="不同段落之間是否有研究篇數、模型表現或研究結論不一致？" rows={3}
+            value={f.q17diff} onChange={set("q17diff")} />
+          <RadioGroup label="我會如何處理這個差異："
+            value={f.q17action} onChange={setChoice("q17action")}
+            options={["回查方法與結果", "查閱補充資料", "尋找其他文獻", "暫時保留疑問"]} />
+        </Block>
+
+        <Block title="最後反思">
+          <div style={{marginBottom:18}}>
+            <p style={{fontWeight:600,fontSize:14,marginBottom:8}}><QNum n="18" />完成這次活動後，我會這樣說：</p>
+            <label className="field-label" style={{display:"block",fontSize:13,marginBottom:4}}>AI 的高準確率可以說明：</label>
+            <textarea rows={2} value={f.q18support} onChange={set("q18support")} style={{marginBottom:12}} />
+            <label className="field-label" style={{display:"block",fontSize:13,marginBottom:4}}>但還不能直接說明：</label>
+            <textarea rows={2} value={f.q18notyet} onChange={set("q18notyet")} />
+          </div>
+          <TA n="19" label="我在使用 AI 前後改變的地方" rows={3} value={f.q19} onChange={set("q19")} />
+          <TA n="20" label="下一次閱讀研究文章時，我會保留的查核習慣" rows={3} value={f.q20} onChange={set("q20")} />
+        </Block>
+
+        <Block title="延伸討論（選讀）">
+          <ReflectionQuestions questions={DISCUSSION_QUESTIONS} />
+        </Block>
+
+        <ModulePager currentId="05" />
+      </main>
+      <SiteFooter />
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
