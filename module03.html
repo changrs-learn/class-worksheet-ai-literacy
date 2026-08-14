@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 03｜AI 輔助研究流程｜AI 素養工作坊</title>
+<link rel="stylesheet" href="assets/style.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="assets/shared.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, PracticeNote, PracticeField, ModulePager } = window.SiteShared;
+
+const GOALS = [
+  "說明研究流程的基本階段，理解 AI 可以介入哪些階段",
+  "辨認不同研究階段中 AI 可能提供的協助與主要風險",
+  "運用人在迴路（HITL）觀念，為 AI 輸出設定查證、覆核、紀錄與責任的檢查點"
+];
+
+const QUESTIONS = [
+  "你平常做報告或研究時，最常在哪一個步驟使用 AI？它具體替你省下了什麼工作？",
+  "哪一個研究節點必須設置 HITL 檢查點？",
+  "哪些資料不應直接輸入外部 AI 服務？"
+];
+
+const RESEARCH_STAGES = [
+  { n: "I", title: "探索與發想研究主題" },
+  { n: "II", title: "文獻檢索與查找" },
+  { n: "III", title: "文獻閱讀與分析" },
+  { n: "IV", title: "設計與執行研究方法" },
+  { n: "V", title: "數據蒐集與資料分析" },
+  { n: "VI", title: "論文寫作／發表期刊" }
+];
+
+const AI_STAGES = [
+  {
+    title: "課堂理解與知識整理",
+    help: ["課程重點整理", "概念解釋", "補充背景知識"],
+    risk: ["內容錯誤或過時", "過度簡化概念", "形成錯誤理解"],
+    owner: ["驗證內容正確性", "理解並內化知識", "連結既有知識"]
+  },
+  {
+    title: "研究問題形成",
+    help: ["發想研究題目", "延伸研究方向", "形成研究假設"],
+    risk: ["題目過於籠統", "缺乏創新性", "與研究領域不符"],
+    owner: ["確立研究價值", "界定研究範圍", "制定研究目的"]
+  },
+  {
+    title: "文獻搜尋與參考文獻蒐集",
+    help: ["關鍵字建議", "搜尋策略建議", "文獻清單整理", "引用格式整理"],
+    risk: ["遺漏關鍵文獻", "偽造或不存在文獻", "引用格式錯誤"],
+    owner: ["制定搜尋策略", "評估文獻品質", "確認完整性", "正確引用來源"]
+  },
+  {
+    title: "閱讀與摘要",
+    help: ["文章重點摘要", "段落重點摘取", "概念關係整理", "比較表格整理"],
+    risk: ["摘要不精確", "遺漏重要細節", "誤解研究結論"],
+    owner: ["深入理解內容", "辨識研究方法與限制", "批判性思考", "做出自己的詮釋"]
+  },
+  {
+    title: "論文撰寫與修訂",
+    help: ["大綱與段落建議", "內容草稿生成", "邏輯與結構建議", "修改與重寫建議"],
+    risk: ["內容不準確", "邏輯不嚴謹", "學術不端風險", "過度依賴生成"],
+    owner: ["論點與論據建構", "內容真實性", "邏輯與結構檢查", "原創性與學術倫理"]
+  },
+  {
+    title: "翻譯與語言潤飾",
+    help: ["中英互譯", "語言潤飾", "語法與用詞建議", "摘要／標題優化"],
+    risk: ["翻譯錯誤", "學術語意不當", "語句不自然", "文化脈絡偏誤"],
+    owner: ["確認語意正確", "調整學術語氣", "符合目標期刊／學科慣用語"]
+  },
+  {
+    title: "資料／圖表／程式碼呈現",
+    help: ["圖表建議與生成", "資料視覺化", "程式碼生成或說明", "結果呈現建議"],
+    risk: ["圖表誤導", "資料解讀錯誤", "程式碼錯誤或不安全", "再現性問題"],
+    owner: ["圖表解讀與結論", "程式碼驗證與測試", "可再現性確保"]
+  },
+  {
+    title: "投稿前驗證與揭露",
+    help: ["檢查語言流暢度", "一致性檢查", "期刊規範確認", "揭露語句建議"],
+    risk: ["未符合期刊規範", "揭露不足或不當", "資料／倫理問題", "最終責任歸屬"],
+    owner: ["全文最後檢查", "遵守期刊規範", "揭露 AI 使用情況", "承擔研究責任"]
+  }
+];
+
+const HITL_PRINCIPLES = [
+  { title: "保持批判性思考", desc: "不盲信 AI 回答，持續質疑與驗證。" },
+  { title: "驗證與交叉檢核", desc: "多來源比對，確認資訊真實與完整。" },
+  { title: "保留紀錄與來源", desc: "記錄使用過程與來源，確保可追溯。" },
+  { title: "遵守學術倫理", desc: "避免不當使用與抄襲，尊重智慧財產權。" },
+  { title: "重視隱私與安全", desc: "避免輸入敏感或未授權資料。" },
+  { title: "透明揭露 AI 使用", desc: "依期刊或機構規範，適當揭露使用情況。" }
+];
+
+function App() {
+  const [answer, setAnswer] = useState({ saved: "", risk: "", check: "" });
+  const set = (key) => (e) => setAnswer({ ...answer, [key]: e.target.value });
+
+  return (
+    <React.Fragment>
+      <SiteHeader />
+      <main className="page-shell page-shell--wide">
+        <ModuleHero
+          id="03"
+          type="內容展示＋練習題"
+          title="AI 輔助研究流程"
+          intro="研究是一連串有前後順序的判斷與操作。這個模組用「研究歷程六階段」＋「AI 使用、風險與人在迴路（HITL）」兩張圖，幫助學生看見 AI 可以介入哪些環節、哪些環節必須自己把關。"
+          goals={GOALS}
+        />
+
+        <Block title="研究歷程六階段">
+          <div className="stage-track">
+            {RESEARCH_STAGES.map((s) => (
+              <div className="stage-card" key={s.n}>
+                <span className="stage-card__badge">{s.n}</span>
+                <p className="stage-card__title">{s.title}</p>
+              </div>
+            ))}
+          </div>
+        </Block>
+
+        <Block title="研究歷程中 AI 的使用、風險與人在迴路（HITL）">
+          <p className="hint" style={{marginBottom:14}}>
+            AI 是研究歷程中的協作工具，協助提升效率；關鍵判斷、驗證與責任始終由研究者承擔。
+          </p>
+          <div className="matrix-scroll">
+            <table className="matrix-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  {AI_STAGES.map((s, i) => <th key={i}>{i + 1}．{s.title}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="matrix-row-label matrix-row-label--help">AI 可協助</td>
+                  {AI_STAGES.map((s, i) => (
+                    <td key={i}><ul>{s.help.map((it, j) => <li key={j}>{it}</li>)}</ul></td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className="matrix-row-label matrix-row-label--risk">風險</td>
+                  {AI_STAGES.map((s, i) => (
+                    <td key={i}><ul>{s.risk.map((it, j) => <li key={j}>{it}</li>)}</ul></td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className="matrix-row-label matrix-row-label--owner">作者仍需負責</td>
+                  {AI_STAGES.map((s, i) => (
+                    <td key={i}><ul>{s.owner.map((it, j) => <li key={j}>{it}</li>)}</ul></td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="citation-box">
+            本表分期分類方式參考 STM Association 2025 年提出的〈Recommendations for a Classification of AI Use in Academic Manuscript Preparation〉之稿件準備活動分類，並延伸至整體研究歷程使用情境。本圖為教學與學習用途之資訊圖，實際使用請依研究領域、機構規範與期刊要求調整。
+          </div>
+
+          <div className="callout" style={{marginTop:14}}>
+            <strong>核心提醒：</strong>AI 不是取代研究者，而是擴大研究者的能力與效率。最終的判斷、驗證與責任始終由研究者承擔。
+          </div>
+
+          <h3 style={{fontSize:15,marginTop:24,marginBottom:4}}>Human-in-the-loop 關鍵原則</h3>
+          <div className="principle-grid">
+            {HITL_PRINCIPLES.map((p, i) => (
+              <div className="principle-item" key={i}>
+                <p className="principle-item__title">{p.title}</p>
+                <p className="principle-item__desc">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Block>
+
+        <Block title="核心收穫">
+          <div className="callout">
+            AI 可以參與研究流程、減少重複工作，但每一項效率收益都應搭配相應的風險判讀與人工檢查點。省下來的時間，不是拿來放棄判斷，而是拿來完成更重要的閱讀、驗證、比較與研究決策。
+          </div>
+        </Block>
+
+        <Block title="練習題">
+          <PracticeNote />
+          <p className="hint" style={{marginBottom:16}}>選一個你最常用 AI 的研究步驟，依序回答下面三個問題：</p>
+          <PracticeField
+            label="AI 幫我省下了什麼工作？"
+            rows={3}
+            value={answer.saved}
+            onChange={set("saved")}
+          />
+          <PracticeField
+            label="這個階段最可能出現什麼錯誤或遺漏？"
+            rows={3}
+            value={answer.risk}
+            onChange={set("risk")}
+          />
+          <PracticeField
+            label="進入下一階段前，我必須親自完成哪一項檢查？"
+            rows={3}
+            value={answer.check}
+            onChange={set("check")}
+          />
+        </Block>
+
+        <Block title="討論／反思題">
+          <ReflectionQuestions questions={QUESTIONS} />
+        </Block>
+
+        <ModulePager currentId="03" />
+      </main>
+      <SiteFooter />
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

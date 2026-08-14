@@ -186,3 +186,53 @@ section.block > h2{
   .module-pager{flex-direction:column;align-items:stretch;}
   .module-pager__home{order:-1;text-align:center;}
 }
+
+/* ---------- 流程圖／階段卡片（例如 Module 03 研究歷程六階段） ---------- */
+.stage-track{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;
+  margin-bottom:8px;
+}
+.stage-card{
+  background:var(--paper-soft);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 14px;text-align:center;
+}
+.stage-card__badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;
+  font-size:13px;font-weight:700;margin-bottom:10px;
+}
+.stage-card__title{font-size:13px;color:var(--text);line-height:1.5;}
+
+/* ---------- 矩陣表格（例如 Module 03 AI 使用／風險／HITL） ---------- */
+.matrix-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);}
+table.matrix-table{
+  width:100%;min-width:820px;border-collapse:collapse;font-size:13px;
+}
+table.matrix-table th,table.matrix-table td{
+  border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;
+}
+table.matrix-table thead th{
+  background:var(--paper-soft);font-size:12px;color:var(--ink);white-space:nowrap;
+}
+table.matrix-table td.matrix-row-label{
+  font-size:12px;font-weight:700;white-space:nowrap;background:var(--paper-soft);
+}
+table.matrix-table td.matrix-row-label--help{border-left:3px solid var(--ink);}
+table.matrix-table td.matrix-row-label--risk{border-left:3px solid var(--danger);}
+table.matrix-table td.matrix-row-label--owner{border-left:3px solid var(--gold);}
+table.matrix-table ul{margin:0;padding-left:16px;}
+table.matrix-table li{margin-bottom:3px;}
+
+.citation-box{
+  font-size:12px;color:var(--text-soft);background:var(--paper-soft);
+  border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-top:14px;
+}
+
+.principle-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:14px;
+}
+.principle-item{
+  border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--paper);
+}
+.principle-item__title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+.principle-item__desc{font-size:12px;color:var(--text-soft);line-height:1.6;}

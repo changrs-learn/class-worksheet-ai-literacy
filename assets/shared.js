@@ -82,6 +82,21 @@
     return h("span", { className: "practice-note" }, text || "練習用，僅供自我檢視，不會送出或儲存");
   }
 
+  function PracticeField({ label, hint, value, onChange, rows, placeholder }) {
+    return h("div", { style: { marginBottom: 18 } },
+      h("label", { className: "field-label", style: { display: "block", fontWeight: 600, fontSize: 14, marginBottom: 6 } },
+        label,
+        hint ? h("span", { className: "hint" }, " — " + hint) : null
+      ),
+      h("textarea", {
+        rows: rows || 4,
+        value: value,
+        onChange: onChange,
+        placeholder: placeholder || "請輸入你的答案..."
+      })
+    );
+  }
+
   function ModulePager({ currentId }) {
     const idx = MODULES.findIndex((m) => m.id === currentId);
     const prev = idx > 0 ? MODULES[idx - 1] : null;
@@ -112,6 +127,7 @@
     Block: Block,
     ReflectionQuestions: ReflectionQuestions,
     PracticeNote: PracticeNote,
+    PracticeField: PracticeField,
     ModulePager: ModulePager
   };
 })(window);

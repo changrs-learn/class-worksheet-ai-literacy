@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 02｜研究需求與提示詞反思｜AI 素養工作坊</title>
+<link rel="stylesheet" href="assets/style.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="assets/shared.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, PracticeNote, PracticeField, ModulePager } = window.SiteShared;
+
+const GOALS = [
+  "說明提示詞與研究需求之間的關係",
+  "辨認自己在學習或研究上的真實需求，把模糊需求轉成具體任務描述",
+  "評估一段提示詞是否足以讓 AI 產生可用、可檢查的回應"
+];
+
+const QUESTIONS = [
+  "你最常對 AI 下的指令，背後真正的需求是什麼？",
+  "你覺得自己在使用 AI 時，最常漏掉哪一種限制條件？",
+  "如果 AI 給出的答案看起來合理，但與你的研究需求不一致，你會怎麼修正？"
+];
+
+function App() {
+  const [answer, setAnswer] = useState("");
+
+  return (
+    <React.Fragment>
+      <SiteHeader />
+      <main className="page-shell">
+        <ModuleHero
+          id="02"
+          type="內容展示＋練習題"
+          title="研究需求與提示詞反思"
+          intro="提示詞不是研究的起點，研究需求才是。這個模組要讓學生在寫提示詞之前，先想清楚自己真正要 AI 協助什麼、有哪些限制條件、輸出要給誰用。"
+          goals={GOALS}
+        />
+
+        <Block title="核心收穫">
+          <div className="callout">
+            真正有價值的不是能否寫出漂亮的提示詞，而是能否先釐清自己要解決什麼問題、需要什麼限制，以及如何判斷 AI 的回應是否可用。
+          </div>
+        </Block>
+
+        <Block title="練習題">
+          <PracticeNote />
+          <PracticeField
+            label="把「幫我找資料」改寫成更清楚的需求描述"
+            hint="提示：加上主題、時間範圍、資料類型、用途"
+            rows={5}
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder="例如：請幫我找 2020 年之後、與……主題相關的期刊論文，用於……"
+          />
+        </Block>
+
+        <Block title="討論／反思題">
+          <ReflectionQuestions questions={QUESTIONS} />
+        </Block>
+
+        <ModulePager currentId="02" />
+      </main>
+      <SiteFooter />
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

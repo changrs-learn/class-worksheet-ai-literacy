@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 00｜課程定位｜AI 素養工作坊</title>
+<link rel="stylesheet" href="assets/style.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="assets/shared.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, ModulePager } = window.SiteShared;
+
+const GOALS = [
+  "說明這門課的定位：AI 基礎素養，不是工具開發或進階實作課",
+  "說出課程聚焦的四個核心面向：AI 輔助研究、資訊素養、研究驗證、負責任研究",
+  "建立對整套課程的共同期待"
+];
+
+const QUESTIONS = [
+  "你原本以為這門課會學到什麼？",
+  "你覺得「會用 AI」和「具備 AI 素養」有什麼不同？",
+  "你希望這門課幫你建立的是什麼能力？"
+];
+
+function App() {
+  return (
+    <React.Fragment>
+      <SiteHeader />
+      <main className="page-shell">
+        <ModuleHero
+          id="00"
+          type="純內容展示"
+          title="課程定位"
+          intro="這門課是「AI 基礎素養」課程，不是 AI 工具開發課，也不會教提示詞工程或 Agent 開發。課程要建立的是：在 AI 時代仍能維持研究判斷、資訊查證與研究責任的能力。"
+          goals={GOALS}
+        />
+
+        <Block title="核心收穫">
+          <div className="callout">
+            AI 是課程入口，但真正的學習重點是研究判斷、資訊素養、研究驗證與責任承擔。
+          </div>
+        </Block>
+
+        <Block title="討論／反思題">
+          <ReflectionQuestions questions={QUESTIONS} />
+        </Block>
+
+        <ModulePager currentId="00" />
+      </main>
+      <SiteFooter />
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

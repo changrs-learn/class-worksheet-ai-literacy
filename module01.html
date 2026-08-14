@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 01｜AI 時代的研究｜AI 素養工作坊</title>
+<link rel="stylesheet" href="assets/style.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="assets/shared.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, ModulePager } = window.SiteShared;
+
+const GOALS = [
+  "說明對話型 AI 與 AI 代理在研究歷程中的不同定位與常見應用情境",
+  "理解 AI 在研究流程中的角色、能力邊界與限制",
+  "建立使用 AI 輔助研究時的基本判斷能力"
+];
+
+const QUESTIONS = [
+  "你目前最常使用哪一種 AI 工具？通常拿來完成哪些工作？",
+  "你曾經完全相信 AI 的回答嗎？後來結果如何？",
+  "如果 AI 能夠完成整個研究流程，你認為研究者還需要負責哪些事情？"
+];
+
+function App() {
+  return (
+    <React.Fragment>
+      <SiteHeader />
+      <main className="page-shell">
+        <ModuleHero
+          id="01"
+          type="純內容展示"
+          title="AI 時代的研究"
+          intro="生成式 AI 已經深入學生的學習與研究流程。這個模組要建立對話型 AI（Chatbot）與 AI 代理（AI Agent）在研究中的不同定位，讓後續模組有共同基礎。"
+          goals={GOALS}
+        />
+
+        <Block title="核心收穫">
+          <div className="callout">
+            無論使用對話型 AI、AI 代理或未來的新工具，研究者始終需要理解研究問題、判斷資訊品質、驗證研究內容，並對最終研究成果負責。
+          </div>
+        </Block>
+
+        <Block title="討論／反思題">
+          <ReflectionQuestions questions={QUESTIONS} />
+        </Block>
+
+        <ModulePager currentId="01" />
+      </main>
+      <SiteFooter />
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
