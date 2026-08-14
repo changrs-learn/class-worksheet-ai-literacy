@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 06｜研究驗證框架｜AI 素養工作坊</title>
+<link rel="stylesheet" href="assets/style.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="assets/shared.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, PracticeNote, PracticeField, ModulePager } = window.SiteShared;
+
+const GOALS = [
+  "說明研究驗證在 AI 時代的重要性",
+  "建立從來源、脈絡、比對到責任歸屬的基本驗證框架",
+  "分辨第一手、第二手與 AI 彙整形成的第三手資料，並依資料層級決定查核與引用方式"
+];
+
+const QUESTIONS = [
+  "你如何判斷自己看到的是第一手、第二手，還是經過多次轉述的第三手資料？",
+  "如果內容看起來合理，但無法追溯來源，你會怎麼做？",
+  "如果你沒有讀過原文，只看過別人的摘要，你在報告中可以怎麼誠實地表述？"
+];
+
+function App() {
+  const [answer, setAnswer] = useState({ level: "", context: "", compare: "", decision: "" });
+  const set = (key) => (e) => setAnswer({ ...answer, [key]: e.target.value });
+
+  return (
+    <React.Fragment>
+      <SiteHeader />
+      <main className="page-shell">
+        <ModuleHero
+          id="06"
+          type="內容展示＋練習題"
+          title="研究驗證框架"
+          intro="AI 能快速生成摘要、整理觀點，研究者更需要一套能持續使用的驗證框架：來源確認、脈絡確認、內容比對、責任確認。這一模組也會教學生分辨第一手、第二手、第三手資料。"
+          goals={GOALS}
+        />
+
+        <Block title="核心收穫">
+          <div className="callout">
+            真正值得信任的內容，必須能被追溯、被比對、被放回脈絡，並且由研究者自己承擔最後的使用責任。
+          </div>
+        </Block>
+
+        <Block title="練習題">
+          <PracticeNote />
+          <p className="hint" style={{marginBottom:16}}>挑一段你打算引用的內容，依四步驟驗證：</p>
+          <PracticeField
+            label="① 這是第幾手資料？"
+            rows={2}
+            value={answer.level}
+            onChange={set("level")}
+          />
+          <PracticeField
+            label="② 放回原文脈絡後，它是在支持、限制、比較還是反駁某個主張？"
+            rows={2}
+            value={answer.context}
+            onChange={set("context")}
+          />
+          <PracticeField
+            label="③ 有沒有其他來源可以比對？"
+            rows={2}
+            value={answer.compare}
+            onChange={set("compare")}
+          />
+          <PracticeField
+            label="④ 你決定怎麼使用它，為什麼？"
+            rows={3}
+            value={answer.decision}
+            onChange={set("decision")}
+          />
+        </Block>
+
+        <Block title="討論／反思題">
+          <ReflectionQuestions questions={QUESTIONS} />
+        </Block>
+
+        <ModulePager currentId="06" />
+      </main>
+      <SiteFooter />
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
