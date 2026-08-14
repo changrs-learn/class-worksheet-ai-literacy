@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>老師端｜實作練習批改系統</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root{
+    --ink:#1E3A5F; --paper:#FFFFFF; --paper-soft:#F7F8FA; --line:#E2E5EA;
+    --text:#1A1F27; --text-soft:#5B6472; --gold:#B8862E; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--paper-soft);color:var(--text);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;}
+  h1,h2,h3{font-family:"Noto Serif TC","Georgia",serif;font-weight:600;margin:0;}
+  textarea{width:100%;font-family:inherit;font-size:14px;color:var(--text);
+    background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;}
+  textarea:focus{outline:none;border-color:var(--ink);}
+  ::-webkit-scrollbar{width:8px;} ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+/* ====================================================================
+   請在部署後，把下方變數換成你正式版 Apps Script 的網址
+   密碼（API_TOKEN）不寫在這裡，改成開啟網頁時手動輸入，
+   避免密碼直接出現在原始碼裡
+   ==================================================================== */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSmxvoxJKV93KOpf5jqd7Wz2H56xx4Dreh4mWfitbnhr9EKJF32x6kyw2rmZqMoauw/exec";
+/* ==================================================================== */
+
+const PARTS = [
+  { key:"1", title:"Part 1｜AI 產出內容", fields:["AI原始回答","判斷_合理處","判斷_太肯定處","判斷_有無條件"], feedbackKey:"批改_Part1評語" },
+  { key:"2", title:"Part 2｜資料庫查證", fields:["資料庫1","資料庫2","關鍵字1","關鍵字2","關鍵字調整","文獻1_名稱","文獻1_結果","文獻2_名稱","文獻2_結果"], feedbackKey:"批改_Part2評語" },
+  { key:"3", title:"Part 3｜內容對照與比較", fields:["比較_AI正確","比較_AI簡化","比較_文獻細節","修正版說明"], feedbackKey:"批改_Part3評語" },
+  { key:"4", title:"Part 4｜關鍵反思", fields:["反思_以為懂了","反思_條件重要性","反思_未來應用"], feedbackKey:"批改_Part4評語" }
+];
+
+const FIELD_LABEL = {
+  "AI原始回答":"AI 原始回答","判斷_合理處":"看起來合理處","判斷_太肯定處":"太肯定處","判斷_有無條件":"有無條件",
+  "資料庫1":"資料庫 1","資料庫2":"資料庫 2","關鍵字1":"關鍵字 1","關鍵字2":"關鍵字 2","關鍵字調整":"關鍵字調整過程",
+  "文獻1_名稱":"文獻一","文獻1_結果":"文獻一結果","文獻2_名稱":"文獻二","文獻2_結果":"文獻二結果",
+  "比較_AI正確":"AI 說對處","比較_AI簡化":"AI 太簡化處","比較_文獻細節":"只有文獻才看得到的細節","修正版說明":"修正版說明",
+  "反思_以為懂了":"以為懂了其實沒懂","反思_條件重要性":"條件與方法的重要性","反思_未來應用":"未來應用策略"
+};
+
+function GradeBox({title, value, onChange, placeholder}){
+  return (
+    <div style={{marginTop:16}}>
+      <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>{title}</p>
+      <textarea rows={3} value={value} onChange={onChange} placeholder={placeholder} />
+    </div>
+  );
+}
+
+function LoginGate({onSubmit}){
+  const [input, setInput] = useState("");
+  const [error, setError] = useState("");
+  const submit = (e) => {
+    e.preventDefault();
+    if(!input.trim()){
+      setError("請輸入密碼");
+      return;
+    }
+    onSubmit(input.trim());
+  };
+  return (
+    <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",background:"var(--paper-soft)"}}>
+      <form onSubmit={submit} style={{background:"var(--paper)",border:"1px solid var(--line)",borderRadius:"var(--radius)",padding:32,width:320}}>
+        <p style={{fontSize:12,letterSpacing:1,color:"var(--gold)",fontWeight:600,marginBottom:4}}>MODULE 04</p>
+        <h1 style={{fontSize:19,marginBottom:20}}>老師端登入</h1>
+        <label style={{display:"block",fontSize:13,fontWeight:600,marginBottom:6}}>批改後台密碼</label>
+        <input
+          type="password" value={input}
+          onChange={e=>{setInput(e.target.value); setError("");}}
+          placeholder="請輸入 API_TOKEN"
+          style={{width:"100%",padding:"9px 12px",border:"1px solid var(--line)",borderRadius:8,fontSize:14,boxSizing:"border-box"}}
+        />
+        {error && <p style={{color:"#B3261E",fontSize:13,marginTop:6}}>{error}</p>}
+        <button type="submit" style={{
+          marginTop:16,width:"100%",background:"var(--ink)",color:"#fff",border:"none",
+          borderRadius:8,padding:"10px",fontSize:15,fontWeight:600,cursor:"pointer"
+        }}>登入</button>
+        <p style={{fontSize:12,color:"var(--text-soft)",marginTop:14}}>密碼只存在這次瀏覽的記憶體裡，重新整理頁面就要再輸入一次。</p>
+      </form>
+    </div>
+  );
+}
+
+function App(){
+  const [token, setToken] = useState(null);
+  const [subs, setSubs] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [grade, setGrade] = useState({p1:"",p2:"",p3:"",p4:"",score:"",overall:""});
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState(null);
+  const [authError, setAuthError] = useState(false);
+
+  const fetchData = async (authToken) => {
+    setLoading(true);
+    try{
+      const res = await fetch(`${APPS_SCRIPT_URL}?token=${encodeURIComponent(authToken)}`);
+      const data = await res.json();
+      if(data.error){
+        setAuthError(true);
+        setToken(null);
+        setSubs([]);
+      } else {
+        setAuthError(false);
+        const valid = data.filter(item => item["學號"]);
+        setSubs(valid.reverse());
+      }
+    }catch(err){
+      alert("無法連線到後端，請確認網址是否正確");
+      setSubs([]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { if(token) fetchData(token); }, [token]);
+
+  if(!token){
+    return (
+      <div>
+        <LoginGate onSubmit={(t)=>setToken(t)} />
+        {authError && <p style={{position:"fixed",top:20,left:0,right:0,textAlign:"center",color:"#B3261E",fontSize:14}}>密碼錯誤，請重新輸入</p>}
+      </div>
+    );
+  }
+
+  const handleSelect = (sub) => {
+    setSelected(sub);
+    setGrade({
+      p1: sub["批改_Part1評語"] || "",
+      p2: sub["批改_Part2評語"] || "",
+      p3: sub["批改_Part3評語"] || "",
+      p4: sub["批改_Part4評語"] || "",
+      score: sub["總結_教師評分"] || "",
+      overall: sub["總結_教師回饋"] || ""
+    });
+    setSaveMsg(null);
+  };
+
+  const handleSave = async () => {
+    if(!selected) return;
+    setSaving(true);
+    setSaveMsg(null);
+    try{
+      const body = new URLSearchParams({
+        action: "saveGrade",
+        token: token,
+        rowId: selected.rowId,
+        "批改_Part1評語": grade.p1,
+        "批改_Part2評語": grade.p2,
+        "批改_Part3評語": grade.p3,
+        "批改_Part4評語": grade.p4,
+        "總結_教師評分": grade.score,
+        "總結_教師回饋": grade.overall
+      }).toString();
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method:"POST",
+        headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+        body
+      });
+      const result = await res.json();
+      if(result.status === "success"){
+        setSaveMsg("success");
+        fetchData(token);
+      } else {
+        setSaveMsg("error");
+      }
+    }catch(err){
+      setSaveMsg("error");
+    }
+    setSaving(false);
+  };
+
+  const filtered = subs.filter(s =>
+    !search || (s["姓名"]||"").includes(search) || (s["學號"]||"").includes(search) || (s["練習主題"]||"").includes(search)
+  );
+
+  return (
+    <div style={{display:"flex",height:"100vh"}}>
+
+      <aside style={{width:300,flexShrink:0,background:"var(--paper)",borderRight:"1px solid var(--line)",display:"flex",flexDirection:"column"}}>
+        <div style={{padding:20,borderBottom:"1px solid var(--line)"}}>
+          <p style={{fontSize:12,letterSpacing:1,color:"var(--gold)",fontWeight:600,marginBottom:4}}>MODULE 04</p>
+          <h1 style={{fontSize:19}}>批改後台</h1>
+        </div>
+        <div style={{padding:"14px 20px"}}>
+          <input
+            value={search} onChange={e=>setSearch(e.target.value)}
+            placeholder="搜尋姓名／學號／主題"
+            style={{width:"100%",padding:"9px 12px",border:"1px solid var(--line)",borderRadius:8,fontSize:14}}
+          />
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"0 12px 20px"}}>
+          {loading && <p style={{padding:"12px",color:"var(--text-soft)",fontSize:14}}>載入中...</p>}
+          {!loading && filtered.length === 0 && <p style={{padding:"12px",color:"var(--text-soft)",fontSize:14}}>目前沒有繳交紀錄</p>}
+          {filtered.map((s,i) => (
+            <button key={i} onClick={()=>handleSelect(s)} style={{
+              display:"block",width:"100%",textAlign:"left",padding:"12px 14px",marginBottom:6,
+              borderRadius:8,border:"1px solid " + (selected===s ? "var(--ink)" : "var(--line)"),
+              background: selected===s ? "#EEF2F7" : "var(--paper)",cursor:"pointer"
+            }}>
+              <p style={{fontWeight:600,fontSize:14,marginBottom:2}}>{s["姓名"]}
+                {s["isGraded"] && <span style={{marginLeft:8,fontSize:11,color:"#1E5631",background:"#E8F3EC",padding:"1px 6px",borderRadius:6}}>已批改</span>}
+              </p>
+              <p style={{fontSize:12,color:"var(--text-soft)"}}>{s["學號"]} ・ {s["練習主題"]}</p>
+            </button>
+          ))}
+        </div>
+      </aside>
+
+      <main style={{flex:1,overflowY:"auto",padding:"32px 40px"}}>
+        {!selected && <p style={{color:"var(--text-soft)"}}>從左側選擇一位學生查看填答內容</p>}
+
+        {selected && (
+          <div style={{maxWidth:820}}>
+            <h2 style={{fontSize:22,marginBottom:4}}>{selected["姓名"]}｜{selected["練習主題"]}</h2>
+            <p style={{fontSize:13,color:"var(--text-soft)",marginBottom:28}}>學號 {selected["學號"]}</p>
+
+            {PARTS.map(part => (
+              <div key={part.key} style={{background:"var(--paper)",border:"1px solid var(--line)",borderRadius:"var(--radius)",padding:20,marginBottom:20}}>
+                <h3 style={{fontSize:16,marginBottom:14}}>{part.title}</h3>
+                {part.fields.map(f => selected[f] && (
+                  <div key={f} style={{marginBottom:10}}>
+                    <p style={{fontSize:12,color:"var(--text-soft)",marginBottom:2}}>{FIELD_LABEL[f] || f}</p>
+                    <p style={{fontSize:14,whiteSpace:"pre-wrap"}}>{selected[f]}</p>
+                  </div>
+                ))}
+                <GradeBox
+                  title={`Part ${part.key} 批改意見`}
+                  value={grade[`p${part.key}`]}
+                  onChange={e=>setGrade({...grade,[`p${part.key}`]:e.target.value})}
+                  placeholder="給予這部分的回饋..."
+                />
+              </div>
+            ))}
+
+            <div style={{background:"var(--paper)",border:"1px solid var(--line)",borderRadius:"var(--radius)",padding:20}}>
+              <h3 style={{fontSize:16,marginBottom:14}}>總結評量與發布</h3>
+              <div style={{display:"grid",gridTemplateColumns:"160px 1fr",gap:16,alignItems:"end"}}>
+                <div>
+                  <p style={{fontSize:13,fontWeight:600,marginBottom:6}}>整體評分</p>
+                  <select value={grade.score} onChange={e=>setGrade({...grade,score:e.target.value})}
+                    style={{width:"100%",padding:"9px",border:"1px solid var(--line)",borderRadius:8,fontSize:14}}>
+                    <option value="">請選擇</option>
+                    <option value="A+ (極佳)">A+（極佳）</option>
+                    <option value="A (佳)">A（佳）</option>
+                    <option value="B (尚可)">B（尚可）</option>
+                    <option value="C (需加強)">C（需加強）</option>
+                  </select>
+                </div>
+                <div>
+                  <p style={{fontSize:13,fontWeight:600,marginBottom:6}}>總結給學生的建議</p>
+                  <textarea rows={2} value={grade.overall} onChange={e=>setGrade({...grade,overall:e.target.value})}
+                    placeholder="例如：整體思路清楚，期待你把這種查證能力用在期末報告中！" />
+                </div>
+              </div>
+              <div style={{marginTop:16,display:"flex",alignItems:"center",gap:16}}>
+                <button onClick={handleSave} disabled={saving} style={{
+                  background:"var(--ink)",color:"#fff",border:"none",borderRadius:8,
+                  padding:"11px 28px",fontSize:15,fontWeight:600,cursor:saving?"default":"pointer",
+                  opacity:saving?0.6:1
+                }}>
+                  {saving ? "儲存中..." : "儲存並發布"}
+                </button>
+                {saveMsg === "success" && <span style={{color:"#1E5631",fontSize:14}}>已儲存</span>}
+                {saveMsg === "error" && <span style={{color:"#B3261E",fontSize:14}}>儲存失敗，請重試</span>}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>實作練習學習單｜Module 04</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root{
+    --ink:#1E3A5F;
+    --ink-light:#3E5A80;
+    --paper:#FFFFFF;
+    --paper-soft:#F7F8FA;
+    --line:#E2E5EA;
+    --text:#1A1F27;
+    --text-soft:#5B6472;
+    --gold:#B8862E;
+    --gold-soft:#FBF3E4;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--text);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    line-height:1.7;}
+  h1,h2,h3{font-family:"Noto Serif TC","Georgia",serif;font-weight:600;margin:0;}
+  input,textarea{
+    width:100%;font-family:inherit;font-size:15px;color:var(--text);
+    background:var(--paper-soft);border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;transition:border-color .15s;
+  }
+  input:focus,textarea:focus{outline:none;border-color:var(--ink);background:var(--paper);}
+  label.field-label{display:block;font-weight:600;font-size:14px;margin-bottom:6px;color:var(--text);}
+  .hint{font-size:13px;color:var(--text-soft);font-weight:400;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+/* ====================================================================
+   請在部署後，把下方兩個變數換成你正式版 Apps Script 的網址與學生端驗證碼
+   （STUDENT_KEY 不是機密密碼，只是用來擋掉隨便亂送資料的路人／機器人，
+   值要跟 GAS 那邊 setupStudentKey_() 設定的字串一致）
+   ==================================================================== */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSmxvoxJKV93KOpf5jqd7Wz2H56xx4Dreh4mWfitbnhr9EKJF32x6kyw2rmZqMoauw/exec";
+const STUDENT_KEY = "ntulss";
+/* ==================================================================== */
+
+/* 課程包：先放生農學院版，之後新增系所包只要在這裡加一組並切換 activePack 即可 */
+const COURSE_PACKS = {
+  agri: {
+    label: "生農學院",
+    intro: "這個練習的目的，不是要你證明 AI 對或錯，而是讓你練習一件生農研究中非常重要的能力：當你看到一段「看起來很合理的說法」，你有沒有能力自己回到學術資料庫查證、修正與補充。",
+    examples: [
+      { title: "作物情境（範例）", items: ["氣候變遷對水稻產量的影響", "氮肥施用方式對蔬菜品質的影響", "某類病原菌對果樹病害的影響"] },
+      { title: "動物情境（範例）", items: ["飼料蛋白質比例對家禽生長表現的影響", "環境溫度對畜禽健康的影響"] },
+      { title: "環境／食品情境（範例）", items: ["土壤性質對農作物吸收養分的影響", "加工或儲存條件對食品品質的影響"] }
+    ],
+    fieldLabel: { target: "作物／動物／環境／食品", database: "PubMed、AGRICOLA + CAB Abstracts、Web of Science、Scopus 等" }
+  }
+};
+const activePack = "agri";
+
+const StepBadge = ({n}) => (
+  <span style={{
+    display:"inline-flex",alignItems:"center",justifyContent:"center",
+    width:26,height:26,borderRadius:"50%",background:"var(--ink)",color:"#fff",
+    fontSize:13,fontWeight:600,marginRight:10,flexShrink:0
+  }}>{n}</span>
+);
+
+const Section = ({title,children}) => (
+  <section style={{marginBottom:36}}>
+    <h2 style={{fontSize:19,marginBottom:16,paddingBottom:10,borderBottom:"1px solid var(--line)"}}>{title}</h2>
+    {children}
+  </section>
+);
+
+const Field = ({label,hint,required,children}) => (
+  <div style={{marginBottom:18}}>
+    <label className="field-label">
+      {label}
+      {required && <span style={{color:"#B3261E"}}> *</span>}
+      {hint && <span className="hint"> — {hint}</span>}
+    </label>
+    {children}
+  </div>
+);
+
+function App(){
+  const pack = COURSE_PACKS[activePack];
+  const [formData, setFormData] = useState({
+    action: "studentSubmit",
+    studentId:"", studentName:"", topic:"",
+    aiResponse:"", judgementReasonable:"", judgementCertain:"", judgementConditions:"",
+    database1:"", database2:"", keyword1:"", keyword2:"", keywordAdjusted:"",
+    paper1Title:"", paper1Author:"", paper1Target:"", paper1Method:"", paper1Result:"",
+    paper2Title:"", paper2Author:"", paper2Target:"", paper2Method:"", paper2Result:"",
+    compareCorrect:"", compareSimplified:"", compareDetails:"",
+    revisedExplanation:"",
+    reflectionIllusion:"", reflectionImportance:"", reflectionFuture:""
+  });
+  const [status, setStatus] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [showValidationBanner, setShowValidationBanner] = useState(false);
+
+  const set = (name) => (e) => setFormData({...formData, [name]: e.target.value});
+
+  const requiredFields = ["studentId","studentName","topic","aiResponse","revisedExplanation",
+    "reflectionIllusion","reflectionImportance","reflectionFuture"];
+  const REQUIRED_LABELS = {
+    studentId:"學號", studentName:"姓名", topic:"本練習主題", aiResponse:"AI 的原始回答（Step 2）",
+    revisedExplanation:"修正版說明（Step 8）", reflectionIllusion:"反思：以為懂了其實沒懂",
+    reflectionImportance:"反思：條件與方法的重要性", reflectionFuture:"反思：未來應用策略"
+  };
+
+  const validate = () => {
+    const errs = {};
+    requiredFields.forEach(f => { if(!formData[f].trim()) errs[f] = "這一格請先填寫再送出"; });
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const fieldMap = {
+    "action":"action","學號":"studentId","姓名":"studentName","練習主題":"topic",
+    "AI原始回答":"aiResponse","判斷_合理處":"judgementReasonable","判斷_太肯定處":"judgementCertain",
+    "判斷_有無條件":"judgementConditions","資料庫1":"database1","資料庫2":"database2",
+    "關鍵字1":"keyword1","關鍵字2":"keyword2","關鍵字調整":"keywordAdjusted",
+    "文獻1_名稱":"paper1Title","文獻1_作者年份":"paper1Author","文獻1_對象":"paper1Target",
+    "文獻1_方法":"paper1Method","文獻1_結果":"paper1Result",
+    "文獻2_名稱":"paper2Title","文獻2_作者年份":"paper2Author","文獻2_對象":"paper2Target",
+    "文獻2_方法":"paper2Method","文獻2_結果":"paper2Result",
+    "比較_AI正確":"compareCorrect","比較_AI簡化":"compareSimplified","比較_文獻細節":"compareDetails",
+    "修正版說明":"revisedExplanation",
+    "反思_以為懂了":"reflectionIllusion","反思_條件重要性":"reflectionImportance","反思_未來應用":"reflectionFuture"
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if(!validate()){
+      setShowValidationBanner(true);
+      window.scrollTo({top:0, behavior:"smooth"});
+      return;
+    }
+    setShowValidationBanner(false);
+    setSubmitting(true);
+    setStatus(null);
+    try{
+      const mapped = {};
+      Object.entries(fieldMap).forEach(([sheetKey, formKey]) => { mapped[sheetKey] = formData[formKey]; });
+      mapped["studentKey"] = STUDENT_KEY;
+      const body = Object.entries(mapped)
+        .map(([k,v]) => encodeURIComponent(k) + "=" + encodeURIComponent(v || ""))
+        .join("&");
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method:"POST",
+        headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+        body
+      });
+      const result = await res.json();
+      setStatus(result.status === "success" ? "success" : "error");
+    }catch(err){
+      setStatus("error");
+    }
+    setSubmitting(false);
+    window.scrollTo({top:document.body.scrollHeight, behavior:"smooth"});
+  };
+
+  return (
+    <div style={{maxWidth:760,margin:"0 auto",padding:"48px 20px 80px"}}>
+
+      <header style={{marginBottom:40}}>
+        <p style={{fontSize:13,letterSpacing:1,color:"var(--gold)",fontWeight:600,marginBottom:8}}>MODULE 04 ｜ {pack.label}情境</p>
+        <h1 style={{fontSize:28,marginBottom:16}}>實作練習學習單</h1>
+        <p style={{fontSize:15,color:"var(--text-soft)",background:"var(--paper-soft)",padding:"14px 16px",borderRadius:"var(--radius)",border:"1px solid var(--line)"}}>
+          {pack.intro}
+        </p>
+        <p style={{fontSize:13,color:"var(--text-soft)",marginTop:10}}><span style={{color:"#B3261E"}}>*</span> 為必填欄位</p>
+      </header>
+
+      {showValidationBanner && Object.keys(errors).length > 0 && (
+        <div style={{background:"#FBEAEA",border:"1px solid #EFC2C2",borderRadius:"var(--radius)",padding:16,marginBottom:24}}>
+          <p style={{color:"#B3261E",fontWeight:600,marginBottom:6}}>還有 {Object.keys(errors).length} 個必填欄位沒有填寫，請往下捲動確認紅字提示：</p>
+          <ul style={{margin:0,paddingLeft:20,color:"#B3261E",fontSize:14}}>
+            {Object.keys(errors).map(f => <li key={f}>{REQUIRED_LABELS[f] || f}</li>)}
+          </ul>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+
+        <Section title="學生資料">
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <Field label="學號" required>
+              <input value={formData.studentId} onChange={set("studentId")} placeholder="例如：B12345678" />
+              {errors.studentId && <p style={{color:"#B3261E",fontSize:13,marginTop:4}}>{errors.studentId}</p>}
+            </Field>
+            <Field label="姓名" required>
+              <input value={formData.studentName} onChange={set("studentName")} placeholder="您的真實姓名" />
+              {errors.studentName && <p style={{color:"#B3261E",fontSize:13,marginTop:4}}>{errors.studentName}</p>}
+            </Field>
+          </div>
+        </Section>
+
+        <Section title="練習情境設定">
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12,marginBottom:16}}>
+            {pack.examples.map((group,i) => (
+              <div key={i} style={{background:"var(--paper-soft)",border:"1px solid var(--line)",borderRadius:"var(--radius)",padding:14}}>
+                <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>{group.title}</p>
+                <ul style={{margin:0,paddingLeft:18,fontSize:13,color:"var(--text-soft)"}}>
+                  {group.items.map((it,j) => <li key={j} style={{marginBottom:4}}>{it}</li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <Field label="本練習主題" required>
+            <input value={formData.topic} onChange={set("topic")} placeholder="請輸入您選擇或老師指定的主題..." />
+            {errors.topic && <p style={{color:"#B3261E",fontSize:13,marginTop:4}}>{errors.topic}</p>}
+          </Field>
+        </Section>
+
+        <Section title="第一部分｜AI 產出內容（起點，不是答案）">
+          <p className="hint" style={{marginBottom:16}}>Step 1：請使用上方主題，向熟悉的 AI 工具詢問您的主題。</p>
+          <Field label={<span><StepBadge n="2"/>保留 AI 的原始回答</span>} hint="請直接貼上 AI 的原始回答（約 200–300 字），不要先修改" required>
+            <textarea rows={6} value={formData.aiResponse} onChange={set("aiResponse")} placeholder="貼上 AI 原始回答..." />
+            {errors.aiResponse && <p style={{color:"#B3261E",fontSize:13,marginTop:4}}>{errors.aiResponse}</p>}
+          </Field>
+          <Field label={<span><StepBadge n="3"/>這段內容看起來「很有道理」的地方是什麼？</span>}>
+            <textarea rows={2} value={formData.judgementReasonable} onChange={set("judgementReasonable")} placeholder="簡答即可..." />
+          </Field>
+          <Field label="有沒有哪一句話讓你覺得「講得有點太肯定」？">
+            <textarea rows={2} value={formData.judgementCertain} onChange={set("judgementCertain")} placeholder="簡答即可..." />
+          </Field>
+          <Field label="有沒有提到實驗條件、作物／動物種類、環境背景？">
+            <textarea rows={2} value={formData.judgementConditions} onChange={set("judgementConditions")} placeholder="簡答即可..." />
+          </Field>
+        </Section>
+
+        <Section title="第二部分｜進學術資料庫查證（核心練習）">
+          <p className="hint" style={{marginBottom:16}}>Step 4：請至少使用兩種不同類型的學術資料庫（{pack.fieldLabel.database}）</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <Field label="本次使用的資料庫 1">
+              <textarea rows={2} value={formData.database1} onChange={set("database1")} placeholder="請填寫資料庫名稱..." />
+            </Field>
+            <Field label="本次使用的資料庫 2">
+              <textarea rows={2} value={formData.database2} onChange={set("database2")} placeholder="請填寫資料庫名稱..." />
+            </Field>
+          </div>
+          <p className="hint" style={{margin:"20px 0 12px"}}>Step 5：資料庫檢索紀錄</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <Field label="資料庫 1 關鍵字">
+              <textarea rows={2} value={formData.keyword1} onChange={set("keyword1")} placeholder="例如：climate change rice yield..." />
+            </Field>
+            <Field label="資料庫 2 關鍵字">
+              <textarea rows={2} value={formData.keyword2} onChange={set("keyword2")} placeholder="例如：rice production warming..." />
+            </Field>
+          </div>
+          <Field label="你有沒有因為「看了 AI 回答」而調整關鍵字？">
+            <textarea rows={3} value={formData.keywordAdjusted} onChange={set("keywordAdjusted")} placeholder="請簡述您的調整過程或原因..." />
+          </Field>
+
+          <p className="hint" style={{margin:"20px 0 12px"}}>Step 6：選擇並閱讀至少 2 篇原始研究（每篇至少看摘要＋方法）</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:16}}>
+            {[1,2].map(n => (
+              <div key={n} style={{background:"var(--paper-soft)",border:"1px solid var(--line)",borderRadius:"var(--radius)",padding:16}}>
+                <p style={{fontWeight:600,marginBottom:12}}>文獻{n === 1 ? "一" : "二"}</p>
+                <Field label="文獻名稱">
+                  <input value={formData[`paper${n}Title`]} onChange={set(`paper${n}Title`)} />
+                </Field>
+                <Field label="作者／年份">
+                  <input value={formData[`paper${n}Author`]} onChange={set(`paper${n}Author`)} />
+                </Field>
+                <Field label="研究對象">
+                  <input value={formData[`paper${n}Target`]} onChange={set(`paper${n}Target`)} />
+                </Field>
+                <Field label="研究方法">
+                  <input value={formData[`paper${n}Method`]} onChange={set(`paper${n}Method`)} />
+                </Field>
+                <Field label="研究結果（概述）">
+                  <textarea rows={3} value={formData[`paper${n}Result`]} onChange={set(`paper${n}Result`)} placeholder="請簡述這篇文獻的研究結果..." />
+                </Field>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        <Section title="第三部分｜AI vs. 資料庫查證結果比較（關鍵）">
+          <p className="hint" style={{marginBottom:16}}>Step 7：內容對照整理（請誠實填寫）</p>
+          <Field label="哪些內容「AI 說得大致正確」？" hint="例如方向正確，但細節不足">
+            <textarea rows={2} value={formData.compareCorrect} onChange={set("compareCorrect")} />
+          </Field>
+          <Field label="哪些內容「AI 說得太簡化或太肯定」？" hint="例如忽略條件、變因、研究限制">
+            <textarea rows={2} value={formData.compareSimplified} onChange={set("compareSimplified")} />
+          </Field>
+          <Field label="哪些重要細節「只有從原始文獻中才看到」？" hint="例如實驗設計、樣本限制、適用範圍">
+            <textarea rows={2} value={formData.compareDetails} onChange={set("compareDetails")} />
+          </Field>
+
+          <div style={{background:"var(--gold-soft)",border:"1px solid #EBD7AE",borderRadius:"var(--radius)",padding:16,marginTop:24}}>
+            <p style={{fontWeight:600,marginBottom:6}}>Step 8：修正版說明（最重要的一步）<span style={{color:"#B3261E"}}> *</span></p>
+            <p style={{fontSize:14,color:"var(--text-soft)",marginBottom:10}}>請根據你實際查閱的文獻，用你自己的話寫一段 150–200 字的說明，回答原本的研究問題。不可直接複製 AI 的內容；必須反映研究條件與限制；語氣可以保留不確定性。</p>
+            <textarea rows={6} value={formData.revisedExplanation} onChange={set("revisedExplanation")} placeholder="綜合上述查證，我的修正說明是..." />
+            {errors.revisedExplanation && <p style={{color:"#B3261E",fontSize:13,marginTop:4}}>{errors.revisedExplanation}</p>}
+          </div>
+        </Section>
+
+        <Section title="第四部分｜反思：我學到了什麼？">
+          <p className="hint" style={{marginBottom:16}}>Step 9：關鍵反思題（必答，請用 4–6 句話回答）</p>
+          <Field label="如果只看 AI 的回答，我會在哪些地方「以為自己懂了，其實沒有」？" required>
+            <textarea rows={3} value={formData.reflectionIllusion} onChange={set("reflectionIllusion")} />
+            {errors.reflectionIllusion && <p style={{color:"#B3261E",fontSize:13,marginTop:4}}>{errors.reflectionIllusion}</p>}
+          </Field>
+          <Field label="為什麼「研究條件」和「方法」不能被省略？" required>
+            <textarea rows={3} value={formData.reflectionImportance} onChange={set("reflectionImportance")} />
+            {errors.reflectionImportance && <p style={{color:"#B3261E",fontSize:13,marginTop:4}}>{errors.reflectionImportance}</p>}
+          </Field>
+          <Field label="未來寫報告時，我會把 AI 用在哪一段？哪一段我一定會回到資料庫與原文？" required>
+            <textarea rows={3} value={formData.reflectionFuture} onChange={set("reflectionFuture")} />
+            {errors.reflectionFuture && <p style={{color:"#B3261E",fontSize:13,marginTop:4}}>{errors.reflectionFuture}</p>}
+          </Field>
+        </Section>
+
+        {status === "success" && (
+          <div style={{background:"#E8F3EC",border:"1px solid #B9DEC5",borderRadius:"var(--radius)",padding:16,color:"#1E5631",fontWeight:600,marginBottom:20}}>
+            學習單已成功送出！
+          </div>
+        )}
+        {status === "error" && (
+          <div style={{background:"#FBEAEA",border:"1px solid #EFC2C2",borderRadius:"var(--radius)",padding:16,color:"#B3261E",fontWeight:600,marginBottom:20}}>
+            發生錯誤，無法連線至資料庫，請稍後再試，或聯絡授課教師。
+          </div>
+        )}
+
+        <div style={{textAlign:"center",paddingTop:12}}>
+          <p style={{fontSize:15,color:"var(--text-soft)",marginBottom:24,lineHeight:1.8}}>
+            AI 可以幫你快速看到「可能的方向」，<br/>但只有你自己進資料庫、讀方法、看條件，<br/>才能決定哪些說法「站得住腳」。
+          </p>
+          <button type="submit" disabled={submitting} style={{
+            background:"var(--ink)",color:"#fff",border:"none",borderRadius:999,
+            padding:"14px 44px",fontSize:16,fontWeight:600,cursor:submitting?"default":"pointer",
+            opacity:submitting?0.6:1
+          }}>
+            {submitting ? "資料傳送中..." : "確認並提交學習單"}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
