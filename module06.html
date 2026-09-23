@@ -28,9 +28,26 @@ const QUESTIONS = [
   "如果你沒有讀過原文，只看過別人的摘要，你在報告中可以怎麼誠實地表述？"
 ];
 
+const VERDICTS = ["支持", "部分支持", "不支持", "目前無法判定"];
+
+const CLAIM_FIELDS = [
+  { key: "source", label: "原始來源與查核位置", hint: "作者、題名、頁碼或段落", rows: 2 },
+  { key: "gap", label: "與 AI 轉述的差異", hint: "範圍、條件、語氣有沒有被改變？", rows: 2 },
+  { key: "final", label: "最後採用的表述", hint: "你會怎麼寫進報告？", rows: 2 }
+];
+
+const emptyClaim = () => ({ claim: "", source: "", gap: "", verdict: "", final: "" });
+
 function App() {
   const [answer, setAnswer] = useState({ level: "", context: "", compare: "", decision: "" });
   const set = (key) => (e) => setAnswer({ ...answer, [key]: e.target.value });
+  const [claims, setClaims] = useState([emptyClaim(), emptyClaim()]);
+  const [changed, setChanged] = useState("");
+  const setClaim = (i, key) => (e) => {
+    const next = claims.slice();
+    next[i] = { ...next[i], [key]: e.target.value };
+    setClaims(next);
+  };
 
   return (
     <React.Fragment>
@@ -50,7 +67,7 @@ function App() {
           </div>
         </Block>
 
-        <Block title="練習題">
+        <Block title="練習一｜四步驟驗證">
           <PracticeNote />
           <p className="hint" style={{marginBottom:16}}>挑一段你打算引用的內容，依四步驟驗證：</p>
           <PracticeField
@@ -79,8 +96,60 @@ function App() {
           />
         </Block>
 
+        <Block title="練習二｜主張層級驗證：從「我有查核」到別人可以重建">
+          <PracticeNote />
+          <p className="hint" style={{margin:"12px 0 12px"}}>
+            OUP 2026 年的調查中，許多研究者表示自己會查核 AI 產出，但這是自我報告（Oxford University Press, 2026）。「我有查核」要變成別人也能重建的紀錄，才算真正完成驗證。
+          </p>
+          <p className="hint" style={{marginBottom:16}}>
+            請拿一段 AI 摘要，挑出兩個主張逐一查核，並用 Module 04 的四種標記判定。這不是新的驗證步驟，而是把來源確認、脈絡確認、內容比對與責任確認落實到每一個主張上。
+          </p>
+          {claims.map((c, i) => (
+            <div className="stage-card" style={{textAlign:"left",marginBottom:16}} key={i}>
+              <span className="stage-card__badge">{i + 1}</span>
+              <PracticeField
+                label={"主張 " + (i + 1)}
+                hint="把 AI 摘要中的一句話改寫成可以查核的主張"
+                rows={2}
+                value={c.claim}
+                onChange={setClaim(i, "claim")}
+              />
+              {CLAIM_FIELDS.slice(0, 2).map((f) => (
+                <PracticeField key={f.key} label={f.label} hint={f.hint} rows={f.rows} value={c[f.key]} onChange={setClaim(i, f.key)} />
+              ))}
+              <div style={{marginBottom:18}}>
+                <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>判定</p>
+                <div style={{display:"flex",flexWrap:"wrap",gap:"8px 18px",fontSize:14}}>
+                  {VERDICTS.map((v) => (
+                    <label key={v} style={{display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}>
+                      <input type="radio" name={"verdict-" + i} value={v} checked={c.verdict === v} onChange={setClaim(i, "verdict")} style={{width:"auto"}} />
+                      {v}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              {CLAIM_FIELDS.slice(2).map((f) => (
+                <PracticeField key={f.key} label={f.label} hint={f.hint} rows={f.rows} value={c[f.key]} onChange={setClaim(i, f.key)} />
+              ))}
+            </div>
+          ))}
+          <PracticeField
+            label="哪一項證據改變了你原本的寫法？"
+            hint="這個決定由誰作出、依據是什麼？"
+            rows={3}
+            value={changed}
+            onChange={(e) => setChanged(e.target.value)}
+          />
+        </Block>
+
         <Block title="討論／反思題">
           <ReflectionQuestions questions={QUESTIONS} />
+        </Block>
+
+        <Block title="參考資料">
+          <div className="citation-box">
+            Oxford University Press. (2026, September). <em>Disclosing AI use in academic research: Survey findings</em> [Survey report].
+          </div>
         </Block>
 
         <ModulePager currentId="06" />
