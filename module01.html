@@ -13,7 +13,8 @@
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, ModulePager } = window.SiteShared;
+const { useState } = React;
+const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, PracticeNote, PracticeField, ModulePager } = window.SiteShared;
 
 const GOALS = [
   "說明對話型 AI 與 AI 代理在研究歷程中的不同定位與常見應用情境",
@@ -27,18 +28,85 @@ const QUESTIONS = [
   "如果 AI 能夠完成整個研究流程，你認為研究者還需要負責哪些事情？"
 ];
 
+const UPLOAD_CHECKS = [
+  "這項資料是否已公開？",
+  "這個 AI 服務的資料使用與保存條款是什麼？",
+  "是否有學校、研究機構或合約要求不能外傳？"
+];
+
 function App() {
+  const [answer, setAnswer] = useState({ saved: "", hidden: "", verify: "" });
+  const set = (key) => (e) => setAnswer({ ...answer, [key]: e.target.value });
+
   return (
     <React.Fragment>
       <SiteHeader />
       <main className="page-shell">
         <ModuleHero
           id="01"
-          type="純內容展示"
+          type="內容展示＋練習題"
           title="AI 時代的研究"
           intro="生成式 AI 已經深入學生的學習與研究流程。這個模組要建立對話型 AI（Chatbot）與 AI 代理（AI Agent）在研究中的不同定位，讓後續模組有共同基礎。"
           goals={GOALS}
         />
+
+        <Block title="「會用 AI」不等於「能判斷 AI 資訊」">
+          <p>
+            OECD 的 PISA 2025 結果提供一個宏觀背景：科技與 AI 是否有助於學習，不能只看使用頻率，而要看使用目的、使用方式，以及學習者是否學過如何評估 AI 生成資訊的品質。
+          </p>
+          <div className="callout callout--muted" style={{marginTop:12}}>
+            注意：PISA 的觀察不能簡化成「AI 導致學習表現下降」，相關結果仍應依研究設計與關聯性的限制謹慎解讀。
+          </div>
+        </Block>
+
+        <Block title="研究者也要評估 AI 服務本身">
+          <p style={{marginBottom:12}}>
+            研究者不只要評估 AI 產出的內容，也要先評估自己交給 AI 服務的資料適不適合上傳。未公開的核心假說、實驗數據、原創推導，以及涉及優先權的草稿，不應只因為工具方便就整份貼進雲端對話。上傳前先問三件事：
+          </p>
+          <ul className="reflection-list">
+            {UPLOAD_CHECKS.map((q, i) => <li key={i}>{q}</li>)}
+          </ul>
+          <p className="hint" style={{marginTop:12}}>
+            這個前置判斷會在 Module 03 延伸為研究流程中的資料風險檢查，並在 Module 07 轉為可操作的分級清單與責任討論。
+          </p>
+        </Block>
+
+        <Block title="案例：AI 參與研究後，責任仍由人承擔">
+          <p style={{marginBottom:12}}>
+            OpenAI 公開說明的 Navier–Stokes 研究案例中，AI 代理協助探索數學問題、產生候選方向，並整理形式化驗證材料；研究團隊仍須說明研究問題、選擇可接受的證據、檢查程式與數學命題的適用範圍，並對最後的論文敘述負責。
+          </p>
+          <p style={{marginBottom:12}}>
+            這個案例的重點不在判斷「問題是否已經完全解決」，而在區分：哪些是研究團隊或官方來源明確說明的事實，哪些是外部分析或媒體轉述，哪些仍需要回到原始材料查核。
+          </p>
+          <div className="callout callout--muted">
+            AI 可以是研究流程中的協助者，但不會因為產出大量文字、程式或候選證明，就自動取得作者資格。作者必須能解釋研究貢獻、確認內容正確、揭露 AI 的實際用途，並在出錯時承擔可追溯的責任。
+          </div>
+        </Block>
+
+        <Block title="練習題｜有幫助，不等於可以直接相信">
+          <PracticeNote />
+          <p className="hint" style={{margin:"12px 0 16px"}}>
+            Oxford University Press（OUP）2026 年的調查顯示，研究者普遍認為 AI 能改善研究工作，也常提到它在可及性與效率上的幫助，但對 AI 產出能否直接信任，態度明顯較保留。請選一個你曾用 AI 協助的研究任務，完成下面三格：
+          </p>
+          <PracticeField
+            label="AI 在哪一個階段幫我節省了什麼工作？"
+            rows={3}
+            value={answer.saved}
+            onChange={set("saved")}
+          />
+          <PracticeField
+            label="這項幫助可能掩蓋什麼錯誤、遺漏或不平等的可及性條件？"
+            rows={3}
+            value={answer.hidden}
+            onChange={set("hidden")}
+          />
+          <PracticeField
+            label="把結果帶進下一階段之前，我要用什麼來源或方法確認它？"
+            rows={3}
+            value={answer.verify}
+            onChange={set("verify")}
+          />
+        </Block>
 
         <Block title="核心收穫">
           <div className="callout">
@@ -48,6 +116,14 @@ function App() {
 
         <Block title="討論／反思題">
           <ReflectionQuestions questions={QUESTIONS} />
+        </Block>
+
+        <Block title="參考資料">
+          <div className="citation-box">
+            Organisation for Economic Co-operation and Development. (2026). <em>PISA 2025: Students’ reading and mathematics performance declined sharply across the OECD</em>. OECD.<br />
+            OpenAI. (2026). <em>Navier–Stokes solution</em> [Official announcement].<br />
+            Oxford University Press. (2026, September). <em>Disclosing AI use in academic research: Survey findings</em> [Survey report].
+          </div>
         </Block>
 
         <ModulePager currentId="01" />

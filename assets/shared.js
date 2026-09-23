@@ -10,7 +10,7 @@
   const MODULES = [
     { id: "00", file: "module00.html", type: "純內容展示", title: "課程定位",
       cardDesc: "這門課在教什麼、不教什麼，先建立共同期待。" },
-    { id: "01", file: "module01.html", type: "純內容展示", title: "AI 時代的研究",
+    { id: "01", file: "module01.html", type: "內容展示＋練習題", title: "AI 時代的研究",
       cardDesc: "對話型 AI 與 AI 代理，在研究中各自扮演什麼角色。" },
     { id: "02", file: "module02.html", type: "內容展示＋練習題", title: "研究需求與提示詞反思",
       cardDesc: "提示詞不是起點，先想清楚自己真正需要什麼。" },
