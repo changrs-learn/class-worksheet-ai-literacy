@@ -44,6 +44,14 @@ const ROBOT_LETTERS = [
   { letter: "T", name: "Timeliness｜時效性", question: "內容是否可能受到知識截止日、政策變動或最新研究影響？" }
 ];
 
+const ROBOT_VERSIONS = [
+  { code: "R", oldName: "Reliability｜可靠性", oldDesc: "關於這個工具的資訊是否可信？", newName: "Reliability｜可靠性", newDesc: "這段內容的說法能否被獨立驗證？" },
+  { code: "O", oldName: "Objectivity｜客觀性", oldDesc: "為什麼要使用或介紹這項 AI？", newName: "Origin｜來源", newDesc: "這段內容混合了哪些來源？來源是否可辨識？" },
+  { code: "B", oldName: "Bias｜偏誤", oldDesc: "這項技術可能帶來哪些偏誤與倫理問題？", newName: "Bias｜偏誤", newDesc: "哪些觀點被放大、哪些觀點缺席？" },
+  { code: "O", oldName: "Ownership｜所有權", oldDesc: "誰開發、擁有並負責這項 AI？", newName: "Objectivity｜客觀性", newDesc: "AI 是否把爭議說成共識、把意見寫成事實？" },
+  { code: "T", oldName: "Type｜類型", oldDesc: "這是什麼類型、階段的 AI，需要多少人為介入？", newName: "Timeliness｜時效性", newDesc: "內容是否可能受知識截止日或最新進展影響？" }
+];
+
 const PUBLISHER_POLICIES = [
   {
     name: "Science Partner Journals／Research 作者指南",
@@ -144,8 +152,36 @@ function App() {
         </Block>
 
         <Block title="練習一｜ROBOT test 小測驗">
+          <div className="callout callout--muted" style={{marginBottom:20}}>
+            <p style={{marginBottom:10}}>
+              <strong>ROBOT test 有新舊兩個版本，字母拼法一樣，但評估對象不同：</strong>原始版由 Hervieux 與 Wheatley 於 2020 年提出，用來評估「要不要使用這個 AI 工具」；
+              但生成式 AI 普及後，同一個工具每次產出的內容都可能不一樣，只評估工具已經不夠，因此 2025 年出現了轉向評估「這段 AI 產出的內容能不能用」的新版（Data Edge Pro, 2025）。
+              R 和 B 兩個字母意思接近，但 O 和 T 的意思改變了——下面練習用的是<strong>新版（評估內容）</strong>，跟 Module 07 的學習目標「以 ROBOT test 檢視 AI 生成內容」對應。
+            </p>
+            <div className="matrix-scroll">
+              <table className="matrix-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>原始版（2020）｜評估 AI 工具</th>
+                    <th>新版（2025）｜評估 AI 生成內容</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ROBOT_VERSIONS.map((v, i) => (
+                    <tr key={i}>
+                      <td className="matrix-row-label matrix-row-label--help">{v.code}</td>
+                      <td>{v.oldName}<br/><span className="hint">{v.oldDesc}</span></td>
+                      <td>{v.newName}<br/><span className="hint">{v.newDesc}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <PracticeNote text="練習用，僅供自我檢視，不會送出或儲存" />
-          <p className="hint" style={{marginBottom:14}}>請先讀下面這段「AI 生成的文獻摘要示例」，再依 R-O-B-O-T 五個面向逐一檢視，寫下你的判斷。</p>
+          <p className="hint" style={{marginBottom:14}}>請先讀下面這段「AI 生成的文獻摘要示例」，再依新版 R-O-B-O-T 五個面向逐一檢視，寫下你的判斷。</p>
 
           <div className="callout callout--muted" style={{marginBottom:20}}>
             <p style={{fontWeight:600,marginBottom:8,color:"var(--text)"}}>練習用示例（虛構文字，非真實文獻摘要）</p>
