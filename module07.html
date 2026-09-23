@@ -17,10 +17,15 @@ const { useState } = React;
 const { SiteHeader, SiteFooter, ModuleHero, Block, ReflectionQuestions, PracticeNote, PracticeField, ModulePager } = window.SiteShared;
 
 const GOALS = [
-  "理解使用 AI 不等於免除研究責任",
-  "辨認研究中的誠實、審慎與可追溯三個核心原則",
-  "能依序查找課程、系所、學校、期刊與出版社的 AI 政策，判斷揭露位置",
-  "能以 ROBOT test 檢視 AI 生成內容"
+  "說明負責任研究在 AI 時代的意義，理解使用 AI 不等於免除研究責任",
+  "辨認研究中的誠實、審慎、可追溯與主體性四個核心原則",
+  "將研究責任落實到資料選擇、內容判斷、驗證與引用等具體行動",
+  "分辨引用、AI 使用揭露、對話紀錄保存與原始來源查核的不同功能",
+  "能由下而上依序查找課程、系所、學校、期刊與出版社的 AI 政策，判斷揭露位置與適用範圍",
+  "初步辨識投稿審查保密、學術倫理、著作權、圖像權利與文字探勘 API 授權風險",
+  "能以工具層、內容層與研究層分析 AI 使用情境，並以 ROBOT test 檢視 AI 生成內容",
+  "分辨作者資格、CRediT 人類貢獻聲明與 AI 使用揭露的不同功能",
+  "建立可持續的負責任 AI 使用態度"
 ];
 
 const QUESTIONS = [
@@ -92,11 +97,68 @@ const PUBLISHER_POLICIES = [
   },
   {
     name: "《教育資料與圖書館學》生成式 AI 誠信原則",
-    nature: "國內期刊制度實例",
+    nature: "期刊制度實例與 AIxCRediT 表單",
     require: "一般揭露統一放在稿件末尾的 Acknowledgment and Declaration；若 AI 實質影響研究設計、資料處理或方法程序，還須在 Research Method 中說明，並提交 AIxCRediT Statement 表單",
     tip: "國內期刊也有自己的明文規範，不能只套用國外格式"
   }
 ];
+
+const USER_LITERACY = [
+  { title: "先查條款，再決定輸入", desc: "區分消費版、教育／企業版與 API 等方案，不以產品名稱推定資料保護程度。" },
+  { title: "敏感資料分艙與去識別化", desc: "未公開的核心假說、實驗數據、原創推導與可識別資料，不整份貼進單一雲端對話。" },
+  { title: "保留版本與時間紀錄", desc: "研究結果、程式碼與重要推導留下版本、日期與作者紀錄，以便處理優先權爭議。" },
+  { title: "辨認跨機構利益衝突", desc: "研究者與 AI 供應商、合作機構或競爭對手之間的關係，可能改變資料曝險與責任判斷。" },
+  { title: "注意零碎線索的拼湊風險", desc: "公開貼文、片段對話與社群傳聞，仍可能被拼湊成可識別的研究線索。" },
+  { title: "爭議發生時先存證", desc: "保留版本、對話與公開時間，再向指導教授、研究倫理、法務或智財窗口諮詢。" }
+];
+
+const LAB_DATA_LEVELS = [
+  { level: "綠燈", color: "#2E7D32", example: "已公開文獻的文法潤飾、格式調整", action: "仍須確認輸出與原文一致，並依課程或投稿規範判斷是否揭露" },
+  { level: "黃燈", color: "var(--gold)", example: "局部程式除錯、抽象化推導諮詢", action: "去除題目、參數與可識別脈絡；使用前查條款，使用後保留查核紀錄" },
+  { level: "紅燈", color: "var(--danger)", example: "未公開核心假說、實驗數據、原創推導或受契約限制的資料", action: "不直接上傳；改用機構核准的安全環境或本地離線工具，並先詢問負責單位" }
+];
+
+const COURSE_POLICY_LIGHTS = [
+  { level: "完全開放（Allowed）", color: "#2E7D32", desc: "可用於特定用途，例如構思大綱、語言潤飾、資料檢索。" },
+  { level: "有條件開放（Conditionally allowed）", color: "var(--gold)", desc: "限於特定用途，並須符合條件，例如限用於程式除錯、須附上詢答歷程。" },
+  { level: "禁止使用（Not allowed）", color: "var(--danger)", desc: "特定任務不得使用，例如期末考、需要獨立完成的申論題。" }
+];
+
+const CASE6_STEPS = [
+  "先用 CRediT 說明丙實際承擔的人類研究貢獻，例如「寫作—檢閱與編輯」與「視覺化」。這些角色描述的是丙的工作，不是 AI 的貢獻。",
+  "再用 AIxCRediT 的思路標示丙使用 AI 的類型（文字修訂、圖像生成或修改），以及丙在提示、選擇、查核與修訂中的參與程度。",
+  "查閱目標出版社與期刊：是否允許生成式圖像？是否要求在圖說或其他段落揭露？是否要提交 AI 使用表單？圖像是否涉及第三方作品、人物、商標或受限制資料？",
+  "判斷這個情境是否違反出版社的負責任使用 AI 規範，並提出修正方案。"
+];
+
+const CREDIT_ROLES = [
+  "概念發想", "數據庋用整理", "正式分析", "資金籌措", "調查", "方法論", "專案管理",
+  "資源供應", "軟體", "督導", "驗證", "視覺化", "寫作—初稿", "寫作—檢閱與編輯"
+];
+
+const AIDAT_TYPES = [
+  "研究設計", "文獻與資料處理", "文獻回顧與綜整", "統計分析與視覺化", "初稿生成",
+  "編修與校對", "引用管理", "審查與倫理遵循", "研究傳播"
+];
+
+const AI_LEVELS = [
+  { code: "L0", name: "純人工", desc: "沒有使用任何生成式 AI 或 AI 輔助工具。" },
+  { code: "L1", name: "初階互動", desc: "初始提問後，直接接受 AI 建議，沒有實質修改。" },
+  { code: "L2", name: "中階互動", desc: "初始提問後，作者接著刪修、微調局部內容。" },
+  { code: "L3", name: "進階互動", desc: "依生成內容多次提問，反覆要求 AI 重新調校內容。" },
+  { code: "L4", name: "高階互動", desc: "反覆多次提問後，最終由作者再行優化或創新內容。" }
+];
+
+const EXTENSION_FIELDS = [
+  { key: "policy", label: "① 適用的正式規範與查閱日期", hint: "先寫這一格：哪一份課程、系所、學校或期刊規範？何時查的？", rows: 2 },
+  { key: "credit", label: "② 人類作者的 CRediT 角色", hint: "每位作者各自對應上方哪些角色？這些角色能說明實際的研究責任嗎？", rows: 3 },
+  { key: "aidat", label: "③ AI 協助的類型（AIDAT）", hint: "AI 協助了上方九類中的哪幾類？", rows: 2 },
+  { key: "image", label: "④ 圖像使用（若有）", hint: "圖像用途、素材來源、修改流程，以及目標期刊的限制", rows: 2 },
+  { key: "place", label: "⑤ 揭露位置", hint: "作者註記、研究方法、Acknowledgment and Declaration、圖說、附錄、AIxCRediT 表單，或其他位置？依據是什麼？", rows: 2 },
+  { key: "draft", label: "⑥ 暫定揭露文字", hint: "是否同時交代 AI 使用範圍、人類作者責任、查核與修訂方式，以及揭露位置的依據？", rows: 4 }
+];
+
+const emptyExtension = () => ({ policy: "", credit: "", aidat: "", level: "", image: "", place: "", draft: "" });
 
 const DECISION_CARD = [
   "我使用了哪一個 AI 工具、哪個版本、在何時使用？",
@@ -111,6 +173,8 @@ function App() {
   const [robot, setRobot] = useState(["", "", "", "", ""]);
   const [robotImpact, setRobotImpact] = useState("");
   const [card, setCard] = useState(["", "", "", "", "", ""]);
+  const [ext, setExt] = useState(emptyExtension());
+  const setExtField = (key) => (e) => setExt({ ...ext, [key]: e.target.value });
 
   const setRobotAt = (i) => (e) => {
     const next = robot.slice();
@@ -131,7 +195,7 @@ function App() {
           id="07"
           type="內容展示＋互動測驗"
           title="負責任研究"
-          intro="使用 AI 不會自動免除研究責任。本模組收束到「誠實、審慎、可追溯、主體性」四個原則，並提供 ROBOT test（可靠性/來源/偏誤/客觀性/時效性）評估 AI 生成內容的方法，以及一份可實作的 AI 揭露決策卡。"
+          intro="使用 AI 不會自動免除研究責任。本模組收束到「誠實、審慎、可追溯、主體性」四個原則，並提供 ROBOT test（可靠性/來源/偏誤/客觀性/時效性）評估 AI 生成內容的方法，以及可實作的 AI 揭露決策卡與 AIxCRediT 延伸卡。"
           goals={GOALS}
         />
 
@@ -146,9 +210,67 @@ function App() {
           </div>
         </Block>
 
+        <Block title="研究者作為 AI 服務使用者：資料、版本與作者責任">
+          <p style={{marginBottom:14}}>
+            使用商業 AI 服務時，研究者也是需要查核服務條款的資料使用者。雲端對話不等於私人筆記本：輸入未公開研究前，要先確認服務方案、資料是否可能被保存或用於改進模型、是否有人工審閱、能否關閉相關用途，以及機構或研究契約有沒有更嚴格的限制。即使某項設定可以降低風險，也不代表可以上傳不應離開研究環境的核心資料。
+          </p>
+          <div className="principle-grid">
+            {USER_LITERACY.map((u, i) => (
+              <div className="principle-item" key={i}>
+                <p className="principle-item__title">{i + 1}．{u.title}</p>
+                <p className="principle-item__desc">{u.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <h3 style={{fontSize:15,marginTop:24,marginBottom:10}}>實驗室科研資料三級管制清單</h3>
+          <div className="matrix-scroll">
+            <table className="check-table" style={{marginBottom:0}}>
+              <thead>
+                <tr><th>等級</th><th>可討論的例子</th><th>教學行動</th></tr>
+              </thead>
+              <tbody>
+                {LAB_DATA_LEVELS.map((r, i) => (
+                  <tr key={i}>
+                    <td style={{fontWeight:700,whiteSpace:"nowrap",borderLeft:`4px solid ${r.color}`}}>{r.level}</td>
+                    <td>{r.example}</td>
+                    <td>{r.action}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="hint" style={{marginTop:10}}>
+            這是課堂上的風險判斷工具，不是任何學校或 AI 供應商的通用政策。Module 03 已先介紹三層分級，這裡補上每一層該採取的行動。
+          </p>
+        </Block>
+
+        <Block title="課程政策不是能力分級">
+          <p style={{marginBottom:14}}>
+            課程的 AI 使用規範要回到學習目標與評量任務，不能只用「這門課允不允許 AI」一句話概括。臺大教學發展中心與數位學習中心的綠、黃、紅課程生成式 AI 使用原則，是給教師設計課程的參考範例，<strong>不是全校統一的強制規定</strong>；MIT 與清華大學的課程 AI 政策選項也是同樣的定位。
+          </p>
+          <div className="principle-grid">
+            {COURSE_POLICY_LIGHTS.map((r, i) => (
+              <div className="principle-item" key={i} style={{borderLeft:`4px solid ${r.color}`}}>
+                <p className="principle-item__title">{r.level}</p>
+                <p className="principle-item__desc">{r.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="callout callout--muted" style={{marginTop:14}}>
+            判讀課綱時，重點是從條文中辨認「任務目的、允許用途、限制條件、揭露要求與違規後果」。評量比例、手寫程式比例與 AI 使用比例不是同一件事；如果課綱只說明作答形式，不能自行推論成整門課的 AI 許可範圍。臺大 114-2、115-1 的實際課程案例，請見
+            <a href="resources.html" style={{color:"var(--ink)",fontWeight:600}}> 臺大 AI 政策速查表 →</a>
+          </div>
+        </Block>
+
         <Block title="核心收穫">
           <div className="callout">
-            負責任的研究，不是把 AI 排除在外，而是在使用 AI 之後，仍然願意對研究內容、資料來源、解讀方式與最終結果承擔責任。
+            <p style={{marginBottom:10}}>
+              負責任的研究，不是把 AI 排除在外，而是在使用 AI 之後，仍然願意對研究內容、資料來源、解讀方式與最終結果承擔責任。
+            </p>
+            <p>
+              Module 03 回答「AI 在哪個研究節點介入、何時需要人在迴路接手」；Module 07 再回答「哪些人類作者承擔哪些研究貢獻、AI 的協助類型與參與程度如何揭露」。兩者合在一起，AI 使用才會成為可查核、可說明、可負責的研究紀錄。
+            </p>
           </div>
         </Block>
 
@@ -222,6 +344,59 @@ function App() {
             第 4 格提到「查了哪些課程、系所、學校、期刊或出版社規範」——如果你是臺大學生，可以參考
             <a href="resources.html" style={{color:"var(--ink)",fontWeight:600}}> 臺大 AI 政策速查表 →</a>，
             裡面整理了校級研究誠信、校級教學框架、院系所自訂規範、學術出版倫理與圖書館引用支援共五層的實際案例與連結。
+          </div>
+        </Block>
+
+        <Block title="案例｜多人合作研究中的文字修訂、圖像製作與 AI 揭露">
+          <p style={{marginBottom:14}}>
+            三位研究者共同撰寫一篇準備投稿的論文：甲負責研究設計與方法，乙負責資料整理與分析，丙負責文字修訂與圖像製作。丙用生成式 AI 產生一張研究概念圖，再用另一個圖像工具修改配色、版面與部分視覺元素，也用文字型 AI 協助修訂英文句子。丙把圖放進稿件，但只在作者群內口頭說明，沒有記錄工具名稱、版本、提示詞、修改過程或素材來源；作者群也還沒查目標出版社對生成式圖像、AI 輔助寫作與圖說揭露的最新規範。
+          </p>
+          <p style={{fontWeight:600,fontSize:14,marginBottom:10}}>請依四個步驟判斷：</p>
+          <ol style={{paddingLeft:22,fontSize:14,lineHeight:1.8,marginBottom:14}}>
+            {CASE6_STEPS.map((t, i) => <li key={i} style={{marginBottom:6}}>{t}</li>)}
+          </ol>
+          <div className="callout callout--muted">
+            這個案例沒有預設「用 AI 圖像就一定違規」。是否違規，取決於目標出版社的政策、圖像用途、揭露是否完整、作者是否實質查核與修訂，以及素材與輸出的權利基礎。即使出版社允許，也不能省略圖說揭露、紀錄保存與人類作者的最終責任。
+          </div>
+        </Block>
+
+        <Block title="練習三｜AIxCRediT 延伸卡">
+          <PracticeNote text="接續練習二的六格決策卡，適合正在寫論文或準備投稿的同學" />
+          <p className="hint" style={{margin:"12px 0 14px"}}>
+            《教育資料與圖書館學》（JoEMLS）要求作者提交 AIxCRediT Statement 表單，把三件事分開說明：用 <strong>CRediT</strong> 交代每位人類作者的研究貢獻，用 <strong>AIDAT</strong> 交代 AI 協助的類型，再用 <strong>L0–L4</strong> 呈現作者監督、查核與修訂的深度。這是該刊的制度實例，不是所有期刊的通用格式，但它說明了為什麼「AI 沒有列為作者」不等於「不需要揭露 AI 使用」。
+          </p>
+
+          <div className="principle-grid" style={{marginBottom:18}}>
+            <div className="principle-item">
+              <p className="principle-item__title">CRediT｜14 種人類貢獻角色</p>
+              <p className="principle-item__desc">{CREDIT_ROLES.join("、")}</p>
+            </div>
+            <div className="principle-item">
+              <p className="principle-item__title">AIDAT｜9 類 AI 協助類型</p>
+              <p className="principle-item__desc">{AIDAT_TYPES.join("、")}</p>
+            </div>
+          </div>
+
+          {EXTENSION_FIELDS.slice(0, 3).map((f) => (
+            <PracticeField key={f.key} label={f.label} hint={f.hint} rows={f.rows} value={ext[f.key]} onChange={setExtField(f.key)} />
+          ))}
+
+          <div style={{marginBottom:18}}>
+            <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>AI 與作者參與程度（L0–L4）<span className="hint"> — 選一個最接近的程度</span></p>
+            {AI_LEVELS.map((l) => (
+              <label key={l.code} style={{display:"flex",alignItems:"flex-start",gap:8,fontSize:14,marginBottom:6,cursor:"pointer"}}>
+                <input type="radio" name="ai-level" value={l.code} checked={ext.level === l.code} onChange={setExtField("level")} style={{width:"auto",marginTop:4}} />
+                <span><strong>{l.code} {l.name}</strong><span className="hint"> — {l.desc}</span></span>
+              </label>
+            ))}
+          </div>
+
+          {EXTENSION_FIELDS.slice(3).map((f) => (
+            <PracticeField key={f.key} label={f.label} hint={f.hint} rows={f.rows} value={ext[f.key]} onChange={setExtField(f.key)} />
+          ))}
+
+          <div className="callout callout--muted" style={{marginTop:4}}>
+            完成後，請把你參考的政策來源分成「正式規範」、「可參考範例」與「個人意見」三類。社群問答或學長姐的做法只能當作參考，不能取代正式規範。ROBOT 警訊請回到練習一檢查。
           </div>
         </Block>
 
