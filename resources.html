@@ -15,6 +15,14 @@
 <script type="text/babel">
 const { SiteHeader, SiteFooter, Block } = window.SiteShared;
 
+const POLICY_LADDER = [
+  "先查目前作業或研究計畫的課程大綱、教師公告與評量規則",
+  "再查系所、學院、研究所學位論文格式與學術倫理規範",
+  "接著查學校研究倫理、學術誠信、圖書館或教務單位的正式說明",
+  "若要投稿，再查目標期刊最新的 Instructions for Authors、投稿系統欄位、AI policy 與 reviewer policy",
+  "若規定仍不清楚，保留查詢紀錄，直接詢問授課教師、指導教授、系所承辦、圖書館員或期刊編輯"
+];
+
 const LAYERS = [
   {
     title: "1．Research Integrity｜研究誠信",
@@ -186,6 +194,23 @@ function App() {
             這份整理僅供查找方向參考，不是正式法規本身；連結內容以各單位官方頁面當下公告為準，實際規定請一律以最新官方頁面為準。更新日期：2026-09-24。
           </div>
         </header>
+
+        <Block title="政策查找階梯">
+          <p className="hint" style={{marginBottom:14}}>
+            遇到「AI 使用要不要揭露、放在哪裡」這類問題時，不要先在社群網站蒐集彼此矛盾的說法，改用由近到遠的順序查找：
+          </p>
+          <div className="stage-track">
+            {POLICY_LADDER.map((s, i) => (
+              <div className="stage-card" key={i}>
+                <span className="stage-card__badge">{i + 1}</span>
+                <p className="stage-card__title">{s}</p>
+              </div>
+            ))}
+          </div>
+          <p className="hint" style={{marginTop:14}}>
+            以下五層，就是把第 1–4 步「課程 → 系所／學院 → 學校 → 期刊／出版社」換成臺大實際案例；第 5 步（直接詢問）沒有現成頁面可查，遇到查不到的情況就是問人的時機。
+          </p>
+        </Block>
 
         <Block title="NTU AI-in-Sight">
           <div className="callout">

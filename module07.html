@@ -44,6 +44,51 @@ const ROBOT_LETTERS = [
   { letter: "T", name: "Timeliness｜時效性", question: "內容是否可能受到知識截止日、政策變動或最新研究影響？" }
 ];
 
+const PUBLISHER_POLICIES = [
+  {
+    name: "Science Partner Journals／Research 作者指南",
+    nature: "期刊投稿政策",
+    require: "AI 不具作者資格；作者須在投稿文件與致謝等適當位置說明使用",
+    tip: "同一出版社的不同期刊仍可能有不同揭露位置"
+  },
+  {
+    name: "Elsevier 期刊生成式 AI 政策",
+    nature: "出版社與期刊作者／審查政策",
+    require: "揭露工具與用途；作者查核輸出並承擔全文責任；審查內容須保密",
+    tip: "作者、編輯、審查者與圖像使用規則要分開看"
+  },
+  {
+    name: "Wiley AI guidelines for researchers",
+    nature: "出版社研究作者、編輯與審查者指南",
+    require: "依使用情境在致謝、方法或圖說揭露，並保護智財、隱私與授權",
+    tip: "揭露是透明與可重現的一部分，不是單純懲罰措施"
+  },
+  {
+    name: "Springer Nature AI guidance",
+    nature: "出版社研究社群政策",
+    require: "2026 年 9 月更新，新增 Green–Amber–Red 風險評估框架，協助依 AI 對研究判斷的影響程度分級；目前官方指南未要求作者在稿件中填報或標示風險等級，仍須依具體使用情形與目標期刊規範處理揭露、查核、保密與圖像限制",
+    tip: "「已揭露」不代表任何圖像或資料使用都被允許"
+  },
+  {
+    name: "Oxford Journals AI use and disclosure policy",
+    nature: "出版實務政策與投稿流程",
+    require: "需同時寫在投稿 Cover Letter＋論文 Acknowledgements；若 AI 是研究方法的一部分，可能還須寫進 Methodology。第一次投稿就要揭露，修稿時若 AI 使用有變也要更新。內容包括工具名稱與版本、使用方式、作者如何指揮與查核",
+    tip: "學位論文或課程也可以借鏡其「可追溯欄位」設計；實際表單與位置仍須查目標期刊規範"
+  },
+  {
+    name: "Cambridge University Press AI authorship policy",
+    nature: "出版倫理與作者責任政策",
+    require: "AI 不具作者資格；AI 使用須說明；作者對準確性、完整性與原創性負責",
+    tip: "把 AI 當成工具不會轉移作者責任"
+  },
+  {
+    name: "《教育資料與圖書館學》生成式 AI 誠信原則",
+    nature: "國內期刊制度實例",
+    require: "一般揭露統一放在稿件末尾的 Acknowledgment and Declaration；若 AI 實質影響研究設計、資料處理或方法程序，還須在 Research Method 中說明，並提交 AIxCRediT Statement 表單",
+    tip: "國內期刊也有自己的明文規範，不能只套用國外格式"
+  }
+];
+
 const DECISION_CARD = [
   "我使用了哪一個 AI 工具、哪個版本、在何時使用？",
   "AI 參與的是發想、搜尋、整理、翻譯、寫作、資料分析、圖像或其他工作？",
@@ -140,6 +185,34 @@ function App() {
             第 4 格提到「查了哪些課程、系所、學校、期刊或出版社規範」——如果你是臺大學生，可以參考
             <a href="resources.html" style={{color:"var(--ink)",fontWeight:600}}> 臺大 AI 政策速查表 →</a>，
             裡面整理了校級研究誠信、校級教學框架、院系所自訂規範、學術出版倫理與圖書館引用支援共五層的實際案例與連結。
+          </div>
+        </Block>
+
+        <Block title="延伸參考｜出版社 AI 揭露政策比較">
+          <p className="hint" style={{marginBottom:14}}>
+            投稿前政策差異本身就是重點：不是哪一家最嚴格，而是各家如何界定作者責任、揭露位置與查核要求。下表是教學用的政策識讀表，不是完整政策轉錄，實際投稿仍須查目標期刊最新規定。
+          </p>
+          <div className="matrix-scroll">
+            <table className="matrix-table" style={{minWidth:760}}>
+              <thead>
+                <tr>
+                  <th>政策案例</th>
+                  <th>內容性質</th>
+                  <th>可觀察的責任要求</th>
+                  <th>教學提醒</th>
+                </tr>
+              </thead>
+              <tbody>
+                {PUBLISHER_POLICIES.map((p, i) => (
+                  <tr key={i}>
+                    <td style={{fontWeight:600}}>{p.name}</td>
+                    <td>{p.nature}</td>
+                    <td>{p.require}</td>
+                    <td>{p.tip}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </Block>
 
