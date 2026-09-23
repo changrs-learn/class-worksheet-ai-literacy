@@ -25,7 +25,29 @@ const GOALS = [
 const QUESTIONS = [
   "你平常做報告或研究時，最常在哪一個步驟使用 AI？它具體替你省下了什麼工作？",
   "哪一個研究節點必須設置 HITL 檢查點？",
-  "哪些資料不應直接輸入外部 AI 服務？"
+  "哪些資料不應直接輸入外部 AI 服務？",
+  "我是否有查核習慣，還是能讓別人重建我的查核歷程？"
+];
+
+const DATA_RISK = [
+  { level: "綠燈", color: "#2E7D32", desc: "已公開文獻的文法潤飾與格式調整。" },
+  { level: "黃燈", color: "var(--gold)", desc: "局部程式除錯，或抽象化的推導諮詢；必須先去除研究題目、參數與可識別的脈絡。" },
+  { level: "紅燈", color: "var(--danger)", desc: "未公開的核心假說、實驗數據、原創推導，或其他受契約／倫理限制的資料。原則上不直接上傳，必要時改用機構核准的安全環境或本地離線工具。" }
+];
+
+const PREFLIGHT_EXAMPLES = [
+  {
+    purpose: "研究流程中，確認重大主張是否有足夠證據",
+    role: "協助整理候選主張、搜尋線索或比較版本",
+    check: "回到官方說明、可重現材料與獨立分析，區分已確認、待查證與不能推出",
+    owner: "研究者：負責主張強度、作者資格、揭露與最後採用決定"
+  },
+  {
+    purpose: "完成課程作業，並符合該課程的學習目標",
+    role: "在課綱允許的範圍內，協助構思、修訂、除錯或練習",
+    check: "先查課綱與作業說明，再確認是否要保留歷程、標示 AI 用途，或禁止直接生成答案",
+    owner: "學生：負責遵守授課教師規範、說明使用方式，並能解釋自己的成果"
+  }
 ];
 
 const RESEARCH_STAGES = [
@@ -98,7 +120,7 @@ const HITL_PRINCIPLES = [
 ];
 
 function App() {
-  const [answer, setAnswer] = useState({ saved: "", risk: "", check: "" });
+  const [answer, setAnswer] = useState({ purpose: "", role: "", check: "", owner: "" });
   const set = (key) => (e) => setAnswer({ ...answer, [key]: e.target.value });
 
   return (
@@ -178,33 +200,79 @@ function App() {
           </div>
         </Block>
 
+        <Block title="流程前置的資料風險檢查">
+          <p style={{marginBottom:14}}>
+            使用 AI 之前，除了問「這個工具能不能做」，還要問「哪些資料可以交給這項服務處理」。可以先把研究輸入分成三層：
+          </p>
+          <div className="principle-grid">
+            {DATA_RISK.map((r, i) => (
+              <div className="principle-item" key={i} style={{borderLeft:`4px solid ${r.color}`}}>
+                <p className="principle-item__title">{r.level}</p>
+                <p className="principle-item__desc">{r.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="callout callout--muted" style={{marginTop:14}}>
+            這是教學用的風險分級，不是任何學校或 AI 服務供應商的通用政策。若研究涉及跨機構合作、優先權或未發表成果，也要保留版本與時間紀錄；遇到爭議時，可以向指導教授、研究倫理、法務或智財窗口諮詢。
+          </div>
+        </Block>
+
         <Block title="核心收穫">
           <div className="callout">
             AI 可以參與研究流程、減少重複工作，但每一項效率收益都應搭配相應的風險判讀與人工檢查點。省下來的時間，不是拿來放棄判斷，而是拿來完成更重要的閱讀、驗證、比較與研究決策。
           </div>
         </Block>
 
-        <Block title="練習題">
+        <Block title="練習題｜課前四欄檢核">
           <PracticeNote />
-          <p className="hint" style={{marginBottom:16}}>選一個你最常用 AI 的研究步驟，依序回答下面三個問題：</p>
+          <p className="hint" style={{margin:"12px 0 14px"}}>
+            研究流程中的第一個 AI 判斷，不只是「工具做不做得到」，還包括「這項課程或作業允不允許這樣做」。開始任務前，先回到課綱、作業說明、系所／學院規範或學校正式政策，再依序填完下面四欄。這張表不是替你決定能不能用 AI，而是把規範轉成可以執行的流程條件。
+          </p>
+          <div className="matrix-scroll" style={{marginBottom:18}}>
+            <table className="check-table" style={{marginBottom:0}}>
+              <thead>
+                <tr><th>任務目的</th><th>AI 角色</th><th>查核點</th><th>責任人</th></tr>
+              </thead>
+              <tbody>
+                {PREFLIGHT_EXAMPLES.map((r, i) => (
+                  <tr key={i}><td>{r.purpose}</td><td>{r.role}</td><td>{r.check}</td><td>{r.owner}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="hint" style={{marginBottom:16}}>上表是兩個範例。請選一個你即將開始的研究或作業任務，填寫自己的一列：</p>
           <PracticeField
-            label="AI 幫我省下了什麼工作？"
-            rows={3}
-            value={answer.saved}
-            onChange={set("saved")}
+            label="① 任務目的"
+            hint="這項任務要完成什麼？要評量或展現什麼能力？"
+            rows={2}
+            value={answer.purpose}
+            onChange={set("purpose")}
           />
           <PracticeField
-            label="這個階段最可能出現什麼錯誤或遺漏？"
-            rows={3}
-            value={answer.risk}
-            onChange={set("risk")}
+            label="② AI 角色"
+            hint="依規範，AI 可以介入哪一段？不能做什麼？"
+            rows={2}
+            value={answer.role}
+            onChange={set("role")}
           />
           <PracticeField
-            label="進入下一階段前，我必須親自完成哪一項檢查？"
-            rows={3}
+            label="③ 查核點"
+            hint="哪些輸出必須回到正式來源查核？是否需要揭露使用方式？"
+            rows={2}
             value={answer.check}
             onChange={set("check")}
           />
+          <PracticeField
+            label="④ 責任人"
+            hint="最後哪些判斷必須由你自己解釋並承擔責任？"
+            rows={2}
+            value={answer.owner}
+            onChange={set("owner")}
+          />
+          <div className="callout" style={{marginTop:4}}>
+            四欄中只要有一欄答不出來，就先停下來查政策或詢問授課教師，不要讓 AI 直接推進流程。完整的課程／系所／學校／出版社政策查找，請見
+            <a href="resources.html" style={{color:"var(--ink)",fontWeight:600}}> 臺大 AI 政策速查表的政策查找階梯 →</a>
+          </div>
         </Block>
 
         <Block title="討論／反思題">
