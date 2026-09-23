@@ -35,7 +35,8 @@ h1,h2,h3{font-family:"Noto Serif TC","Georgia",serif;font-weight:600;margin:0;}
 
 a{color:var(--ink);}
 
-.hint{font-size:13px;color:var(--text-soft);font-weight:400;}
+.hint{font-size:14px;color:var(--text-soft);font-weight:400;}
+p.hint{font-size:15px;line-height:1.75;}
 
 input,textarea{
   width:100%;font-family:inherit;font-size:15px;color:var(--text);
@@ -58,7 +59,7 @@ input:focus,textarea:focus{outline:none;border-color:var(--ink);background:var(-
   display:flex;flex-direction:column;text-decoration:none;color:var(--text);
 }
 .site-header__brand-eyebrow{
-  font-size:11px;letter-spacing:1.5px;color:var(--gold);font-weight:600;
+  font-size:12px;letter-spacing:1.5px;color:var(--gold);font-weight:600;
 }
 .site-header__brand-title{
   font-family:"Noto Serif TC","Georgia",serif;font-weight:600;font-size:17px;color:var(--ink);
@@ -79,7 +80,7 @@ input:focus,textarea:focus{outline:none;border-color:var(--ink);background:var(-
 }
 .site-footer__inner{
   max-width:960px;margin:0 auto;
-  font-size:13px;color:var(--text-soft);
+  font-size:14px;color:var(--text-soft);
   display:flex;flex-direction:column;gap:6px;
 }
 
@@ -95,13 +96,13 @@ input:focus,textarea:focus{outline:none;border-color:var(--ink);background:var(-
   background:var(--paper-soft);border:1px solid var(--line);border-radius:var(--radius);
   padding:16px 18px;margin-top:16px;
 }
-.module-goals__title{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--ink);}
-.module-goals ul{margin:0;padding-left:20px;font-size:14px;color:var(--text-soft);}
+.module-goals__title{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--ink);}
+.module-goals ul{margin:0;padding-left:20px;font-size:15px;color:var(--text-soft);}
 .module-goals li{margin-bottom:6px;}
 
 .callout{
   background:var(--gold-soft);border:1px solid #EBD7AE;border-radius:var(--radius);
-  padding:16px 18px;font-size:14px;color:var(--text);
+  padding:16px 18px;font-size:16px;line-height:1.75;color:var(--text);
 }
 .callout--muted{background:var(--paper-soft);border-color:var(--line);color:var(--text-soft);}
 
@@ -113,11 +114,11 @@ section.block > h2{
 .reflection-list{margin:0;padding-left:0;list-style:none;}
 .reflection-list li{
   padding:14px 16px;background:var(--paper-soft);border:1px solid var(--line);
-  border-radius:var(--radius);margin-bottom:10px;font-size:15px;
+  border-radius:var(--radius);margin-bottom:10px;font-size:16px;
 }
 
 .practice-note{
-  display:inline-block;font-size:12px;color:var(--text-soft);
+  display:inline-block;font-size:14px;color:var(--text-soft);
   background:var(--paper-soft);border:1px solid var(--line);border-radius:999px;
   padding:3px 10px;margin-bottom:10px;
 }
@@ -128,15 +129,15 @@ section.block > h2{
   margin-top:56px;padding-top:24px;border-top:1px solid var(--line);
 }
 .module-pager__link{
-  flex:1;text-decoration:none;color:var(--ink);font-size:14px;
+  flex:1;text-decoration:none;color:var(--ink);font-size:15px;
   border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;
   transition:border-color .15s;
 }
 .module-pager__link:hover{border-color:var(--ink);}
 .module-pager__link--next{text-align:right;}
-.module-pager__label{display:block;font-size:11px;color:var(--text-soft);margin-bottom:4px;}
+.module-pager__label{display:block;font-size:12px;color:var(--text-soft);margin-bottom:4px;}
 .module-pager__home{
-  flex:0 0 auto;text-decoration:none;color:var(--text-soft);font-size:13px;
+  flex:0 0 auto;text-decoration:none;color:var(--text-soft);font-size:14px;
   padding:12px 14px;
 }
 
@@ -156,8 +157,8 @@ section.block > h2{
   background:var(--paper-soft);border:1px solid var(--line);border-radius:var(--radius);
   padding:16px;text-align:center;
 }
-.course-meta__label{font-size:12px;color:var(--text-soft);margin-bottom:6px;}
-.course-meta__value{font-size:15px;font-weight:600;color:var(--ink);}
+.course-meta__label{font-size:13px;color:var(--text-soft);margin-bottom:6px;}
+.course-meta__value{font-size:16px;font-weight:600;color:var(--ink);}
 
 .module-grid{
   max-width:960px;margin:0 auto;padding:0 20px 40px;
@@ -175,11 +176,11 @@ section.block > h2{
   font-size:13px;font-weight:700;margin-bottom:14px;
 }
 .module-card__type{
-  display:inline-block;margin-left:8px;font-size:11px;color:var(--gold);
+  display:inline-block;margin-left:8px;font-size:12px;color:var(--gold);
   background:var(--gold-soft);border-radius:999px;padding:3px 10px;vertical-align:middle;
 }
-.module-card__title{font-size:17px;margin-bottom:8px;}
-.module-card__desc{font-size:13px;color:var(--text-soft);line-height:1.6;}
+.module-card__title{font-size:18px;margin-bottom:8px;}
+.module-card__desc{font-size:15px;color:var(--text-soft);line-height:1.7;}
 
 @media (max-width:600px){
   .hero__title{font-size:26px;}
@@ -199,23 +200,23 @@ section.block > h2{
 .stage-card__badge{
   display:inline-flex;align-items:center;justify-content:center;
   width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;
-  font-size:13px;font-weight:700;margin-bottom:10px;
+  font-size:14px;font-weight:700;margin-bottom:10px;
 }
-.stage-card__title{font-size:13px;color:var(--text);line-height:1.5;}
+.stage-card__title{font-size:15px;color:var(--text);line-height:1.6;}
 
 /* ---------- 矩陣表格（例如 Module 03 AI 使用／風險／HITL） ---------- */
 .matrix-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);}
 table.matrix-table{
-  width:100%;min-width:820px;border-collapse:collapse;font-size:13px;
+  width:100%;min-width:960px;border-collapse:collapse;font-size:15px;line-height:1.6;
 }
 table.matrix-table th,table.matrix-table td{
   border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;
 }
 table.matrix-table thead th{
-  background:var(--paper-soft);font-size:12px;color:var(--ink);white-space:nowrap;
+  background:var(--paper-soft);font-size:14px;color:var(--ink);white-space:nowrap;
 }
 table.matrix-table td.matrix-row-label{
-  font-size:12px;font-weight:700;white-space:nowrap;background:var(--paper-soft);
+  font-size:14px;font-weight:700;white-space:nowrap;background:var(--paper-soft);
 }
 table.matrix-table td.matrix-row-label--help{border-left:3px solid var(--ink);}
 table.matrix-table td.matrix-row-label--risk{border-left:3px solid var(--danger);}
@@ -224,52 +225,52 @@ table.matrix-table ul{margin:0;padding-left:16px;}
 table.matrix-table li{margin-bottom:3px;}
 
 .citation-box{
-  font-size:12px;color:var(--text-soft);background:var(--paper-soft);
+  font-size:14px;line-height:1.75;color:var(--text-soft);background:var(--paper-soft);
   border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-top:14px;
 }
 
 .principle-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:14px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px;
 }
 .principle-item{
-  border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--paper);
+  border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--paper);
 }
-.principle-item__title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;}
-.principle-item__desc{font-size:12px;color:var(--text-soft);line-height:1.6;}
+.principle-item__title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.principle-item__desc{font-size:15px;color:var(--text-soft);line-height:1.7;margin:0;}
 
 /* ---------- 核對清單表格（例如 Module 05 田間部署查核） ---------- */
-.check-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;}
-.check-table th,.check-table td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:middle;}
-.check-table th{background:var(--paper-soft);font-size:12px;color:var(--ink);}
+.check-table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.6;margin-bottom:8px;}
+.check-table th,.check-table td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:middle;}
+.check-table th{background:var(--paper-soft);font-size:14px;color:var(--ink);}
 .check-table td.check-table__radio{text-align:center;white-space:nowrap;width:1%;}
-.check-table input[type="text"]{padding:6px 8px;font-size:13px;}
+.check-table input[type="text"]{padding:6px 8px;font-size:15px;}
 
 /* ---------- 題號徽章（例如 Module 05 20 題學習單） ---------- */
 .q-badge{
   display:inline-flex;align-items:center;justify-content:center;
   width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;
-  font-size:12px;font-weight:700;margin-right:8px;flex-shrink:0;vertical-align:middle;
+  font-size:13px;font-weight:700;margin-right:8px;flex-shrink:0;vertical-align:middle;
 }
 
 /* ---------- 資源頁（例如 臺大 AI 政策速查表，不計入 8 模組編號） ---------- */
 .resource-back{
-  font-size:13px;color:var(--ink-light);text-decoration:none;font-weight:600;
+  font-size:14px;color:var(--ink-light);text-decoration:none;font-weight:600;
   display:inline-block;margin-bottom:20px;
 }
 .layer-group{margin-bottom:32px;}
-.layer-group__title{font-size:16px;margin-bottom:4px;}
-.layer-group__desc{font-size:13px;color:var(--text-soft);margin-bottom:14px;}
+.layer-group__title{font-size:17px;margin-bottom:4px;}
+.layer-group__desc{font-size:15px;color:var(--text-soft);margin-bottom:14px;}
 .resource-card{
   border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);
   padding:16px 18px;margin-bottom:12px;
 }
-.resource-card__meta{font-size:12px;color:var(--gold);font-weight:600;margin-bottom:4px;}
-.resource-card__title{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text);}
-.resource-card__desc{font-size:13px;color:var(--text-soft);line-height:1.7;margin-bottom:10px;}
-.resource-card__link{font-size:13px;color:var(--ink);text-decoration:none;font-weight:600;}
+.resource-card__meta{font-size:13px;color:var(--gold);font-weight:600;margin-bottom:4px;}
+.resource-card__title{font-size:16px;font-weight:600;margin-bottom:8px;color:var(--text);}
+.resource-card__desc{font-size:15px;color:var(--text-soft);line-height:1.7;margin-bottom:10px;}
+.resource-card__link{font-size:14px;color:var(--ink);text-decoration:none;font-weight:600;}
 .resource-card__link:hover{text-decoration:underline;}
 .resource-link-bar{
-  text-align:center;font-size:13px;color:var(--text-soft);padding:16px 20px 40px;
+  text-align:center;font-size:14px;color:var(--text-soft);padding:16px 20px 40px;
 }
 .resource-link-bar a{color:var(--ink-light);font-weight:600;text-decoration:none;}
 .resource-link-bar a:hover{text-decoration:underline;}

@@ -335,7 +335,7 @@ function App() {
             {DECISION_CARD.map((q, i) => (
               <div className="stage-card" style={{textAlign:"left"}} key={i}>
                 <span className="stage-card__badge">{i + 1}</span>
-                <p style={{fontSize:14,fontWeight:600,marginBottom:10,lineHeight:1.6}}>{q}</p>
+                <p style={{fontSize:15,fontWeight:600,marginBottom:10,lineHeight:1.6}}>{q}</p>
                 <textarea rows={3} value={card[i]} onChange={setCardAt(i)} placeholder="請輸入你的答案..." />
               </div>
             ))}
@@ -351,8 +351,8 @@ function App() {
           <p style={{marginBottom:14}}>
             三位研究者共同撰寫一篇準備投稿的論文：甲負責研究設計與方法，乙負責資料整理與分析，丙負責文字修訂與圖像製作。丙用生成式 AI 產生一張研究概念圖，再用另一個圖像工具修改配色、版面與部分視覺元素，也用文字型 AI 協助修訂英文句子。丙把圖放進稿件，但只在作者群內口頭說明，沒有記錄工具名稱、版本、提示詞、修改過程或素材來源；作者群也還沒查目標出版社對生成式圖像、AI 輔助寫作與圖說揭露的最新規範。
           </p>
-          <p style={{fontWeight:600,fontSize:14,marginBottom:10}}>請依四個步驟判斷：</p>
-          <ol style={{paddingLeft:22,fontSize:14,lineHeight:1.8,marginBottom:14}}>
+          <p style={{fontWeight:600,fontSize:15,marginBottom:10}}>請依四個步驟判斷：</p>
+          <ol style={{paddingLeft:22,fontSize:15,lineHeight:1.8,marginBottom:14}}>
             {CASE6_STEPS.map((t, i) => <li key={i} style={{marginBottom:6}}>{t}</li>)}
           </ol>
           <div className="callout callout--muted">
@@ -382,9 +382,9 @@ function App() {
           ))}
 
           <div style={{marginBottom:18}}>
-            <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>AI 與作者參與程度（L0–L4）<span className="hint"> — 選一個最接近的程度</span></p>
+            <p style={{fontWeight:600,fontSize:15,marginBottom:8}}>AI 與作者參與程度（L0–L4）<span className="hint"> — 選一個最接近的程度</span></p>
             {AI_LEVELS.map((l) => (
-              <label key={l.code} style={{display:"flex",alignItems:"flex-start",gap:8,fontSize:14,marginBottom:6,cursor:"pointer"}}>
+              <label key={l.code} style={{display:"flex",alignItems:"flex-start",gap:8,fontSize:15,marginBottom:6,cursor:"pointer"}}>
                 <input type="radio" name="ai-level" value={l.code} checked={ext.level === l.code} onChange={setExtField("level")} style={{width:"auto",marginTop:4}} />
                 <span><strong>{l.code} {l.name}</strong><span className="hint"> — {l.desc}</span></span>
               </label>

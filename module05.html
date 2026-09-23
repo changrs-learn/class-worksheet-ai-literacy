@@ -42,7 +42,7 @@ const QNum = ({n}) => <span className="q-badge">{n}</span>;
 
 const TA = ({n,label,hint,value,onChange,rows,placeholder}) => (
   <div style={{marginBottom:18}}>
-    <label className="field-label" style={{display:"block",fontWeight:600,fontSize:14,marginBottom:6}}>
+    <label className="field-label" style={{display:"block",fontWeight:600,fontSize:15,marginBottom:6}}>
       {n && <QNum n={n} />}{label}
       {hint && <span className="hint"> — {hint}</span>}
     </label>
@@ -52,7 +52,7 @@ const TA = ({n,label,hint,value,onChange,rows,placeholder}) => (
 
 const TI = ({n,label,value,onChange,placeholder}) => (
   <div style={{marginBottom:18}}>
-    <label className="field-label" style={{display:"block",fontWeight:600,fontSize:14,marginBottom:6}}>
+    <label className="field-label" style={{display:"block",fontWeight:600,fontSize:15,marginBottom:6}}>
       {n && <QNum n={n} />}{label}
     </label>
     <input value={value} onChange={onChange} placeholder={placeholder || ""} />
@@ -61,12 +61,12 @@ const TI = ({n,label,value,onChange,placeholder}) => (
 
 const YesNo = ({n,label,value,onChange,detailValue,onDetailChange,detailPlaceholder}) => (
   <div style={{marginBottom:18}}>
-    <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>{n && <QNum n={n} />}{label}</p>
+    <p style={{fontWeight:600,fontSize:15,marginBottom:8}}>{n && <QNum n={n} />}{label}</p>
     <div style={{display:"flex",gap:20,marginBottom: value === "yes" ? 8 : 0}}>
-      <label style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+      <label style={{fontSize:15,display:"flex",alignItems:"center",gap:6}}>
         <input type="radio" checked={value === "no"} onChange={() => onChange("no")} style={{width:"auto"}} /> 沒有
       </label>
-      <label style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+      <label style={{fontSize:15,display:"flex",alignItems:"center",gap:6}}>
         <input type="radio" checked={value === "yes"} onChange={() => onChange("yes")} style={{width:"auto"}} /> 有
       </label>
     </div>
@@ -78,10 +78,10 @@ const YesNo = ({n,label,value,onChange,detailValue,onDetailChange,detailPlacehol
 
 const RadioGroup = ({n,label,value,onChange,options}) => (
   <div style={{marginBottom:18}}>
-    {label && <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>{n && <QNum n={n} />}{label}</p>}
+    {label && <p style={{fontWeight:600,fontSize:15,marginBottom:8}}>{n && <QNum n={n} />}{label}</p>}
     <div style={{display:"flex",flexWrap:"wrap",gap:16}}>
       {options.map((opt,i) => (
-        <label key={i} style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+        <label key={i} style={{fontSize:15,display:"flex",alignItems:"center",gap:6}}>
           <input type="radio" checked={value === opt} onChange={() => onChange(opt)} style={{width:"auto"}} /> {opt}
         </label>
       ))}
@@ -140,7 +140,7 @@ function App() {
           <TA n="1" label="我讀到的主題" hint="用一句話說明這篇文本主要在討論什麼" rows={2}
             value={f.q1} onChange={set("q1")} />
 
-          <label className="field-label" style={{display:"block",fontWeight:600,fontSize:14,marginBottom:6}}>
+          <label className="field-label" style={{display:"block",fontWeight:600,fontSize:15,marginBottom:6}}>
             <QNum n="2" />我的初步理解 <span className="hint">— 請寫下你認為文本最重要的三個訊息</span>
           </label>
           <TI label="1．" value={f.q2a} onChange={set("q2a")} />
@@ -151,14 +151,14 @@ function App() {
             value={f.q3} onChange={set("q3")} />
 
           <div style={{marginBottom:18}}>
-            <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>
+            <p style={{fontWeight:600,fontSize:15,marginBottom:8}}>
               <QNum n="4" />我的預測 — 如果研究中的 AI 模型準確率很高，我目前
             </p>
             <div style={{display:"flex",gap:20,marginBottom:8}}>
-              <label style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+              <label style={{fontSize:15,display:"flex",alignItems:"center",gap:6}}>
                 <input type="radio" checked={f.q4choice === "會"} onChange={() => setChoice("q4choice")("會")} style={{width:"auto"}} /> 會
               </label>
-              <label style={{fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+              <label style={{fontSize:15,display:"flex",alignItems:"center",gap:6}}>
                 <input type="radio" checked={f.q4choice === "不會"} onChange={() => setChoice("q4choice")("不會")} style={{width:"auto"}} /> 不會
               </label>
             </div>
@@ -202,13 +202,13 @@ function App() {
             提問提示語範例（可參考使用）：「我已先讀過學生版文本並提出自己的判斷。現在請協助我定位原文中與＿＿＿＿有關的段落或表格，標出頁碼或段落，並提醒我哪些地方仍需要自己核對；不要把定位結果當成已證明的結論。」
           </div>
 
-          <p style={{fontWeight:600,fontSize:14,marginBottom:6}}><QNum n="12" />核對研究範圍 <span className="hint">— 原文是否回顧所有精準農業研究？請找出支持你判斷的段落或頁碼</span></p>
+          <p style={{fontWeight:600,fontSize:15,marginBottom:6}}><QNum n="12" />核對研究範圍 <span className="hint">— 原文是否回顧所有精準農業研究？請找出支持你判斷的段落或頁碼</span></p>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:18}}>
             <TI label="我的判斷" value={f.q12judge} onChange={set("q12judge")} />
             <TI label="頁碼／段落" value={f.q12loc} onChange={set("q12loc")} />
           </div>
 
-          <p style={{fontWeight:600,fontSize:14,marginBottom:6}}><QNum n="13" />核對研究資料分布 <span className="hint">— 原文如何描述研究資料的地理分布？它說的是研究作者、研究機構、研究場域，還是資料集來源？</span></p>
+          <p style={{fontWeight:600,fontSize:15,marginBottom:6}}><QNum n="13" />核對研究資料分布 <span className="hint">— 原文如何描述研究資料的地理分布？它說的是研究作者、研究機構、研究場域，還是資料集來源？</span></p>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:18}}>
             <TI label="我的判斷" value={f.q13judge} onChange={set("q13judge")} />
             <TI label="頁碼／段落" value={f.q13loc} onChange={set("q13loc")} />
@@ -217,7 +217,7 @@ function App() {
           <TA n="14" label="核對美洲研究的疑問" hint="原文是否充分解釋美國或其他美洲研究為什麼較少出現？如果沒有，還有哪些可能原因需要查證？" rows={3}
             value={f.q14} onChange={set("q14")} />
 
-          <p style={{fontWeight:600,fontSize:14,marginBottom:6}}><QNum n="15" />核對高準確率 <span className="hint">— 原文中的高準確率是在什麼資料與測試條件下得到的？</span></p>
+          <p style={{fontWeight:600,fontSize:15,marginBottom:6}}><QNum n="15" />核對高準確率 <span className="hint">— 原文中的高準確率是在什麼資料與測試條件下得到的？</span></p>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:18}}>
             <TI label="資料／影像條件" value={f.q15data} onChange={set("q15data")} />
             <TI label="測試條件" value={f.q15test} onChange={set("q15test")} />
@@ -225,7 +225,7 @@ function App() {
           </div>
 
           <div style={{marginBottom:18}}>
-            <p style={{fontWeight:600,fontSize:14,marginBottom:8}}><QNum n="16" />核對田間部署 <span className="hint">— 原文是否提供以下資訊？請勾選並記錄證據位置</span></p>
+            <p style={{fontWeight:600,fontSize:15,marginBottom:8}}><QNum n="16" />核對田間部署 <span className="hint">— 原文是否提供以下資訊？請勾選並記錄證據位置</span></p>
             <div className="matrix-scroll">
               <table className="check-table">
                 <thead>
@@ -267,10 +267,10 @@ function App() {
 
         <Block title="最後反思">
           <div style={{marginBottom:18}}>
-            <p style={{fontWeight:600,fontSize:14,marginBottom:8}}><QNum n="18" />完成這次活動後，我會這樣說：</p>
-            <label className="field-label" style={{display:"block",fontSize:13,marginBottom:4}}>AI 的高準確率可以說明：</label>
+            <p style={{fontWeight:600,fontSize:15,marginBottom:8}}><QNum n="18" />完成這次活動後，我會這樣說：</p>
+            <label className="field-label" style={{display:"block",fontSize:14,marginBottom:4}}>AI 的高準確率可以說明：</label>
             <textarea rows={2} value={f.q18support} onChange={set("q18support")} style={{marginBottom:12}} />
-            <label className="field-label" style={{display:"block",fontSize:13,marginBottom:4}}>但還不能直接說明：</label>
+            <label className="field-label" style={{display:"block",fontSize:14,marginBottom:4}}>但還不能直接說明：</label>
             <textarea rows={2} value={f.q18notyet} onChange={set("q18notyet")} />
           </div>
           <TA n="19" label="我在使用 AI 前後改變的地方" rows={3} value={f.q19} onChange={set("q19")} />

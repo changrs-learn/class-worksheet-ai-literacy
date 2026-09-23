@@ -118,8 +118,8 @@ function App() {
                 <PracticeField key={f.key} label={f.label} hint={f.hint} rows={f.rows} value={c[f.key]} onChange={setClaim(i, f.key)} />
               ))}
               <div style={{marginBottom:18}}>
-                <p style={{fontWeight:600,fontSize:14,marginBottom:8}}>判定</p>
-                <div style={{display:"flex",flexWrap:"wrap",gap:"8px 18px",fontSize:14}}>
+                <p style={{fontWeight:600,fontSize:15,marginBottom:8}}>判定</p>
+                <div style={{display:"flex",flexWrap:"wrap",gap:"8px 18px",fontSize:15}}>
                   {VERDICTS.map((v) => (
                     <label key={v} style={{display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}>
                       <input type="radio" name={"verdict-" + i} value={v} checked={c.verdict === v} onChange={setClaim(i, "verdict")} style={{width:"auto"}} />

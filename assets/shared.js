@@ -84,7 +84,7 @@
 
   function PracticeField({ label, hint, value, onChange, rows, placeholder }) {
     return h("div", { style: { marginBottom: 18 } },
-      h("label", { className: "field-label", style: { display: "block", fontWeight: 600, fontSize: 14, marginBottom: 6 } },
+      h("label", { className: "field-label", style: { display: "block", fontWeight: 600, fontSize: 15, marginBottom: 6 } },
         label,
         hint ? h("span", { className: "hint" }, " — " + hint) : null
       ),
