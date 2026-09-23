@@ -64,8 +64,12 @@ function App() {
         {MODULES.map((m) => <ModuleCard key={m.id} m={m} />)}
       </section>
 
-      <p style={{textAlign:"center", fontSize:13, color:"var(--text-soft)", padding:"0 20px 40px"}}>
+      <p style={{textAlign:"center", fontSize:13, color:"var(--text-soft)", padding:"0 20px 20px"}}>
         8 個模組不需依序完成，可自由跳轉；Module 04 完成後會送交老師批改，其餘模組僅供課堂練習與自我檢視。
+      </p>
+
+      <p className="resource-link-bar">
+        延伸資源：<a href="resources.html">臺大 AI 政策速查表</a>（非本站 8 模組之一，整理校內外 AI 政策查找方向）
       </p>
 
       <SiteFooter />

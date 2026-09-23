@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>臺大 AI 政策速查表｜AI 素養工作坊</title>
+<link rel="stylesheet" href="assets/style.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="assets/shared.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { SiteHeader, SiteFooter, Block } = window.SiteShared;
+
+const LAYERS = [
+  {
+    title: "1．Research Integrity｜研究誠信",
+    desc: "臺大目前最重要的校級 AI 研究指引，研究誠信辦公室已將其同時列入教師、學生與研究人員的校內倫理規範。",
+    items: [
+      {
+        meta: "校級｜研究誠信辦公室",
+        title: "國立臺灣大學生成式 AI 使用與研究誠信指引",
+        desc: "2026/7/3 公布。適用師生及研究人員；涵蓋研究誠信、AI 使用責任、資訊查核、揭露等，並明定各單位可依學門特性另訂細則。",
+        url: "https://ori.ntu.edu.tw/news/detail/news_sn/108",
+        linkText: "官方公告暨指引下載"
+      }
+    ]
+  },
+  {
+    title: "2．Teaching & Assessment｜教學與評量",
+    desc: "教務處／教發中心建立的校級教學原則與課程層級框架。",
+    items: [
+      {
+        meta: "校級｜教務處／教發中心",
+        title: "臺大針對生成式 AI 工具之教學因應措施",
+        desc: "臺大較早建立的校級教學原則。強調教師應在課程設計、評量與課程大綱中明確訂定 AI 使用規則；學生須理解工具限制、查核資訊並遵守學術誠信。",
+        url: "https://www.dlc.ntu.edu.tw/ai-tools/",
+        linkText: "教學因應措施"
+      },
+      {
+        meta: "校級｜教務處／教發中心",
+        title: "課程生成式 AI 使用原則（Guideline for Generative AI Use in Courses）",
+        desc: "新版課程層級框架，以綠／黃／紅區分 AI 使用情境。官方特別說明它是教師課程設計的參考範例，不是全校統一強制規定；實際規則由授課教師決定。",
+        url: "https://www.dlc.ntu.edu.tw/ai-%E6%99%82%E4%BB%A3%E7%9A%84%E6%95%99%E8%88%87%E5%AD%B8%EF%BC%9A%E7%8F%BE%E6%B3%81%E5%88%86%E6%9E%90%E8%88%87%E8%A1%8C%E5%8B%95%E6%96%B9%E6%A1%88/",
+        linkText: "AI 時代的教與學：課程生成式 AI 使用原則"
+      }
+    ]
+  },
+  {
+    title: "3．Department-level Rules｜院系所自訂規範",
+    desc: "不同院系所可依學門特性訂定更細的規則，同一所大學內不必然一致，使用前務必先查自己所屬單位的版本。",
+    items: [
+      {
+        meta: "系級｜文學院外國語文學系暨研究所",
+        title: "本系學生使用生成式 AI 的參考指引",
+        desc: "2023 年開始，2025/11/24 更新。教師可自行決定是否允許學生使用 AI；若允許，學生須揭露使用動機、範圍與出處，並依 MLA、APA 等格式標註；學生提交之論文、作品與報告仍須自行完成。",
+        url: "https://www.forex.ntu.edu.tw/14458/",
+        linkText: "外文系 AI 參考指引"
+      },
+      {
+        meta: "所級｜公衛學院健康政策與管理研究所",
+        title: "教學研究行為守則－生成式 AI 工具的使用",
+        desc: "2025/6/12 所務會議通過、6/15 發布。師生可依教研需求使用 AI，但須尊重隱私並清楚揭露 AI 工具類型、編輯或生成內容及其範圍；所有 AI 編輯或生成內容都須由使用者自行查核真實性並負作者責任。學生撰寫學位論文使用 AI 工具，未清楚揭露使用方式或未確保內容之真實性者，視為抄襲或舞弊之違反學術倫理行為。",
+        url: "https://ntuhpm.ntu.edu.tw/uploads/root/ntuhpm/HPM_Academic_Conduct_20260615.pdf",
+        linkText: "健管所教學研究行為守則（2026.6.15 更新）"
+      }
+    ]
+  },
+  {
+    title: "4．Scholarly Publishing｜學術出版",
+    desc: "校內期刊、學刊自訂的出版倫理 AI 條款，投稿或擔任審查者前建議先查目標刊物的最新規定。",
+    items: [
+      {
+        meta: "系所出版單位｜社會工作學系《臺大社會工作學刊》",
+        title: "出版倫理聲明－AI 工具使用",
+        desc: "2026/3 修訂。作者若在寫作、圖像、資料蒐集或分析中使用 AI，須揭露工具及使用方式；AI 不得列為作者。審查者不得將稿件、圖表或審查資料輸入生成式 AI。",
+        url: "https://ntusw.ntu.edu.tw/zh_tw/publicatoions_0/NTUSWR",
+        linkText: "臺大社會工作學刊出版倫理聲明"
+      },
+      {
+        meta: "學院出版單位｜管理學院《臺大管理論叢》",
+        title: "投稿人及審查人使用生成式 AI 規範",
+        desc: "作者仍須負原創性、資料正確性與內容責任，AI 僅宜作語言或技術性輔助；審查者不得將未公開稿件內容輸入外部生成式 AI。",
+        url: "https://review.management.ntu.edu.tw/download/%E5%B0%8D%E6%96%BC%E5%AD%B8%E8%A1%93%E5%80%AB%E7%90%86%E4%B9%8B%E5%8E%9F%E5%89%87%E8%AA%AA%E6%98%8E2026_3_18%E4%BF%AE%E8%A8%82%E6%A1%88.pdf",
+        linkText: "《臺大管理論叢》學術倫理原則 PDF"
+      }
+    ]
+  },
+  {
+    title: "5．Citation & Research Support｜引用與研究支援",
+    desc: "非校級政策或正式行政規章，但提供具體的查核、引用操作建議，適合搭配政策一起看。",
+    items: [
+      {
+        meta: "校級研究支援｜臺大圖書館",
+        title: "HELP 講堂 AI 素養系列講義",
+        desc: "AI 資訊素養、資訊查核、學術引用與研究使用支援。最新已公開講義：2026/5/25〈用對 AI，學術研究不踩線〉；下一版：2026/9/24〈從生成式 AI 談資訊查核與學術文獻引用〉，講義待課後公布。",
+        url: "https://www.lib.ntu.edu.tw/img/tulblog/HELP/HELP_20260525_AI.pdf",
+        linkText: "用對 AI，學術研究不踩線（2026/5/25）"
+      },
+      {
+        meta: "校級研究支援｜臺大圖書館",
+        title: "如何引用 ChatGPT 生成內容？",
+        desc: "整理 APA、MLA、Chicago 等 AI 引用方式，以及出版社政策；提醒使用者查核 AI 內容、揭露使用、保留紀錄及確認教師或出版社最新規範。頁面最近更新至 2026/6/8。",
+        url: "https://tul.blog.ntu.edu.tw/archives/32789",
+        linkText: "臺大圖書館 AI 生成內容引用指引"
+      }
+    ]
+  }
+];
+
+function ResourceCard({ item }) {
+  return (
+    <div className="resource-card">
+      <p className="resource-card__meta">{item.meta}</p>
+      <p className="resource-card__title">{item.title}</p>
+      <p className="resource-card__desc">{item.desc}</p>
+      <a className="resource-card__link" href={item.url} target="_blank" rel="noopener noreferrer">{item.linkText} ↗</a>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <React.Fragment>
+      <SiteHeader />
+      <main className="page-shell page-shell--wide">
+        <a className="resource-back" href="module07.html">← 回 Module 07｜負責任研究</a>
+
+        <header style={{marginBottom:32}}>
+          <p className="module-eyebrow">延伸資源｜非本站 8 模組之一</p>
+          <h1 className="module-title">臺大 AI 政策速查表</h1>
+          <p className="hint" style={{fontSize:15,lineHeight:1.8,marginTop:14}}>
+            Module 07 提到：使用 AI 前要依序查找課程、系所、學校、期刊與出版社的規範。這頁把「查找階梯」換成臺大真實案例，
+            整理成校級研究誠信、校級教學框架、院系所自訂規範、學術出版倫理、圖書館引用支援共五層。
+          </p>
+          <div className="callout callout--muted" style={{marginTop:16}}>
+            這份整理僅供查找方向參考，不是正式法規本身；連結內容以各單位官方頁面當下公告為準，實際規定請一律以最新官方頁面為準。更新日期：2026-09-23。
+          </div>
+        </header>
+
+        <Block title="NTU AI-in-Sight">
+          <div className="callout">
+            教務處在 2026 年 9 月正式上線的 AI 整合資源平台，內容涵蓋教學願景、教學與應用、學習引導、AI 工具、相關資源等。
+            官方說明它會持續整合校內 AI 政策與教學／學習資源，是之後查最新臺大 AI 政策動態時值得優先查的入口（本身不算單一政策文件）。
+          </div>
+        </Block>
+
+        {LAYERS.map((layer, i) => (
+          <Block title={layer.title} key={i}>
+            <p className="hint" style={{marginBottom:14}}>{layer.desc}</p>
+            {layer.items.map((item, j) => <ResourceCard item={item} key={j} />)}
+          </Block>
+        ))}
+
+        <Block title="這份清單沒有涵蓋什麼">
+          <div className="callout callout--muted">
+            現階段暫時沒有把個別教師課程大綱列入。課程大綱中其實已經可以找到很多教師自行訂定的揭露原則、允許／禁止範圍等規則，
+            例如部分課程明確禁止特定作業使用 AI，但這些屬於課程層級政策，而不是院系所正式政策——使用 AI 前，仍應先看自己這門課的課程大綱與教師公告。
+          </div>
+        </Block>
+
+        <a className="resource-back" href="module07.html">← 回 Module 07｜負責任研究</a>
+      </main>
+      <SiteFooter />
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
